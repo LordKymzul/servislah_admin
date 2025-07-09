@@ -1,4 +1,4 @@
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
@@ -9,6 +9,7 @@ import { RegisterDto } from "../../data/entities/dto/register-dto";
 
 export const useAuthTanstack = () => {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const queryClient = useQueryClient();
     const [user, setUser] = useState<any>(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -64,15 +65,22 @@ export const useAuthTanstack = () => {
                 queryClient.invalidateQueries({ queryKey: ["user"] });
 
                 toast.success("Successfully logged in");
-                router.push("/dashboard");
+
+                // Handle redirect after successful login
+                const redirectTo = searchParams.get('redirect');
+                if (redirectTo) {
+                    router.replace(redirectTo);
+                } else {
+                    router.replace("/dashboard");
+                }
             } else {
                 toast.error("Failed to process login");
-                router.push("/login");
+                router.replace("/login");
             }
         },
         onError: (error: Error) => {
             toast.error("Login failed: " + error.message);
-            router.push("/login");
+            router.replace("/login");
         },
         onSettled: () => {
             setIsLoading(false);

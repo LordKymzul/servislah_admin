@@ -1,7 +1,11 @@
+"use client";
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 
 export default function Home() {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
   return (
     <div className="min-h-screen bg-white">
       {/* Navigation */}
@@ -11,13 +15,107 @@ export default function Home() {
             <div className="flex items-center">
               <span className="text-2xl font-bold text-blue-600">ServisLah</span>
             </div>
+
+            {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-8">
               <Link href="#services" className="text-gray-600 hover:text-blue-600">Services</Link>
               <Link href="#how-it-works" className="text-gray-600 hover:text-blue-600">How It Works</Link>
               <Link href="#contact" className="text-gray-600 hover:text-blue-600">Contact</Link>
-              <button className="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition">
-                Book Now
-              </button>
+              <div className="flex items-center space-x-4">
+                <Link
+                  href="/login"
+                  className="text-gray-700 hover:text-blue-600 px-4 py-2 rounded-full border border-gray-300 hover:border-blue-600 transition"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="/register"
+                  className="bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700 transition"
+                >
+                  Register
+                </Link>
+                <button className="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition">
+                  Book Now
+                </button>
+              </div>
+            </div>
+
+            {/* Mobile Menu Button */}
+            <button
+              className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                {isMobileMenuOpen ? (
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                ) : (
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
+                )}
+              </svg>
+            </button>
+          </div>
+
+          {/* Mobile Menu */}
+          <div className={`md:hidden ${isMobileMenuOpen ? 'block' : 'hidden'} pt-4 pb-3 border-t border-gray-200`}>
+            <div className="flex flex-col space-y-4">
+              <Link
+                href="#services"
+                className="text-gray-600 hover:text-blue-600 px-4 py-2 hover:bg-gray-50 rounded-lg"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Services
+              </Link>
+              <Link
+                href="#how-it-works"
+                className="text-gray-600 hover:text-blue-600 px-4 py-2 hover:bg-gray-50 rounded-lg"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                How It Works
+              </Link>
+              <Link
+                href="#contact"
+                className="text-gray-600 hover:text-blue-600 px-4 py-2 hover:bg-gray-50 rounded-lg"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Contact
+              </Link>
+              <div className="flex flex-col space-y-2 px-4">
+                <Link
+                  href="/auth/signin"
+                  className="text-gray-700 hover:text-blue-600 px-4 py-2 rounded-full border border-gray-300 hover:border-blue-600 transition text-center"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="/auth/register"
+                  className="bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700 transition text-center"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Register
+                </Link>
+                <button
+                  className="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Book Now
+                </button>
+              </div>
             </div>
           </div>
         </div>

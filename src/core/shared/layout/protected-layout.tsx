@@ -19,16 +19,18 @@ export default function ProtectedLayout({ children }: ProtectedLayoutProps) {
     useEffect(() => {
         if (!isLoading) {
             if (isDashboardRoute && !isAuthenticated) {
-                router.push('/?redirect=' + encodeURIComponent(pathname));
+                // Fix: Ensure proper URL construction for redirect
+                router.push(`/login?redirect=${encodeURIComponent(pathname)}`);
             } else if (isAuthenticated) {
                 const redirectTo = searchParams.get('redirect');
-                if (redirectTo && redirectTo !== pathname) {
-                    router.push(redirectTo);
+                if (redirectTo) {
+                    // Fix: Ensure we're handling the redirect path correctly
+                    router.replace(redirectTo);
                     return;
                 }
 
                 if (pathname === '/login' || pathname === '/register') {
-                    router.push('/dashboard');
+                    router.replace('/dashboard');
                 }
             }
         }
