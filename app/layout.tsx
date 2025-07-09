@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import TanstackQueryClientProvider from "@/src/core/shared/provider/query-client-provider";
+import ProtectedLayout from "@/src/core/shared/layout/protected-layout";
+import { Toaster } from "sonner";
+import { ThemeProvider } from "@/src/core/theme/theme-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -23,11 +27,27 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html
+      suppressHydrationWarning
+      lang="en"
+      className="light"
+      style={{ colorScheme: "light" }}
+    >
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem={true}
+        >
+          <TanstackQueryClientProvider>
+            <ProtectedLayout>
+              {children}
+            </ProtectedLayout>
+            <Toaster />
+          </TanstackQueryClientProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
