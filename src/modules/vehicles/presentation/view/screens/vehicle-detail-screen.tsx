@@ -1,7 +1,6 @@
 "use client"
 
 import { useQueryVehicleById } from "../../tanstack/vehicle-tanstack";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
@@ -9,30 +8,22 @@ import { Car, Calendar, Copy, Fuel, User, MapPin, DollarSign, MoreHorizontal } f
 import InfoScreen from "@/src/core/shared/presentation/screens/info-screen";
 import { InfoScreenType } from "@/src/core/shared/presentation/screens/info-screen";
 import AppointmentStatusBadge from "@/src/core/shared/presentation/components/appointment-status-badge";
+import DefaultCard from "@/src/core/shared/presentation/components/default-card";
+import { formatDateTime } from "@/src/core/util/helper";
 
 const VehicleDetailScreen = ({ vehicleId }: { vehicleId: string }) => {
     const { data: vehicle, isLoading, error } = useQueryVehicleById(vehicleId);
-
     if (isLoading) {
         return (
-            <div className="min-h-screen bg-gray-50">
-                <div className="max-w-7xl mx-auto p-6 space-y-6">
-                    <div className="h-6 w-48 bg-gray-200 animate-pulse rounded" />
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <div className="lg:col-span-2 space-y-6">
-                            <div className="h-80 bg-white border border-gray-200 animate-pulse rounded-lg" />
-                            <div className="h-64 bg-white border border-gray-200 animate-pulse rounded-lg" />
-                        </div>
-                        <div className="space-y-6">
-                            <div className="h-48 bg-white border border-gray-200 animate-pulse rounded-lg" />
-                            <div className="h-64 bg-white border border-gray-200 animate-pulse rounded-lg" />
-                        </div>
-                    </div>
+            <div className="space-y-4 p-4">
+                <div className="h-12 w-[250px] bg-muted animate-pulse rounded" />
+                <div className="grid gap-4">
+                    <div className="h-[200px] bg-muted animate-pulse rounded" />
+                    <div className="h-[200px] bg-muted animate-pulse rounded" />
                 </div>
             </div>
         );
     }
-
     if (error || !vehicle) {
         return (
             <div className="min-h-screen bg-gray-50">
@@ -47,14 +38,7 @@ const VehicleDetailScreen = ({ vehicleId }: { vehicleId: string }) => {
         );
     }
 
-    const formatDate = (date: string | undefined) => {
-        if (!date) return 'N/A';
-        return new Date(date).toLocaleDateString('en-US', {
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric'
-        });
-    };
+
 
     const copyToClipboard = (text: string) => {
         navigator.clipboard.writeText(text);
@@ -64,18 +48,18 @@ const VehicleDetailScreen = ({ vehicleId }: { vehicleId: string }) => {
         <div className="min-h-screen">
             <div className="mx-auto p-6 space-y-6">
                 {/* Breadcrumb */}
-                <div className="flex items-center text-sm text-gray-500 space-x-2">
+                <div className="flex items-center text-sm  space-x-2">
                     <span>Vehicles</span>
                     <span>›</span>
-                    <span className="text-gray-900 font-medium">{vehicle.model}</span>
+                    <span className="font-medium">{vehicle.model}</span>
                 </div>
 
                 {/* Header */}
                 <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4">
-                        <h1 className="text-2xl font-semibold text-gray-900">{vehicle.model}</h1>
+                        <h1 className="text-2xl font-semibold">{vehicle.model}</h1>
                         <div className="flex items-center space-x-2">
-                            <Badge className="bg-green-100 text-green-800 border-green-200">
+                            <Badge variant="outline">
                                 Published
                             </Badge>
                         </div>
@@ -90,25 +74,25 @@ const VehicleDetailScreen = ({ vehicleId }: { vehicleId: string }) => {
                     {/* Left Column */}
                     <div className="lg:col-span-2 space-y-6">
                         {/* Vehicle Details */}
-                        <div className="bg-white border border-gray-200 rounded-lg">
-                            <div className="p-6 border-b border-gray-200">
-                                <h3 className="text-lg font-medium text-gray-900">Vehicle Information</h3>
+                        <DefaultCard>
+                            <div className="p-6 border-b ">
+                                <h3 className="text-lg font-medium">Vehicle Information</h3>
                             </div>
                             <div className="p-6 space-y-6">
                                 {/* Basic Info Grid */}
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Model</label>
-                                        <p className="text-sm text-gray-900">{vehicle.model}</p>
+                                        <label className="block text-sm font-medium mb-1">Model</label>
+                                        <p className="text-sm">{vehicle.model}</p>
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Year</label>
-                                        <p className="text-sm text-gray-900">{vehicle.year}</p>
+                                        <label className="block text-sm font-medium mb-1">Year</label>
+                                        <p className="text-sm">{vehicle.year}</p>
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">License Plate</label>
+                                        <label className="block text-sm font-medium mb-1">License Plate</label>
                                         <div className="flex items-center space-x-2">
-                                            <span className="text-sm text-gray-900 font-mono">{vehicle.license_plate}</span>
+                                            <span className="text-sm font-mono">{vehicle.license_plate}</span>
                                             <button
                                                 onClick={() => copyToClipboard(vehicle.license_plate || 'N/A')}
                                                 className="text-gray-400 hover:text-gray-600"
@@ -118,25 +102,25 @@ const VehicleDetailScreen = ({ vehicleId }: { vehicleId: string }) => {
                                         </div>
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Fuel Type</label>
-                                        <p className="text-sm text-gray-900">{vehicle.fuel_type}</p>
+                                        <label className="block text-sm font-medium mb-1">Fuel Type</label>
+                                        <p className="text-sm">{vehicle.fuel_type}</p>
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Color</label>
-                                        <p className="text-sm text-gray-900">{vehicle.color || 'N/A'}</p>
+                                        <label className="block text-sm font-medium mb-1">Color</label>
+                                        <p className="text-sm">{vehicle.color || 'N/A'}</p>
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Created</label>
-                                        <p className="text-sm text-gray-900">{formatDate(vehicle.created_at)}</p>
+                                        <label className="block text-sm font-medium mb-1">Created</label>
+                                        <p className="text-sm">{formatDateTime(vehicle.created_at)}</p>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </DefaultCard>
 
                         {/* Media Section */}
-                        <div className="bg-white border border-gray-200 rounded-lg">
-                            <div className="p-6 border-b border-gray-200 flex items-center justify-between">
-                                <h3 className="text-lg font-medium text-gray-900">Media</h3>
+                        <DefaultCard>
+                            <div className="p-6 border-b  flex items-center justify-between">
+                                <h3 className="text-lg font-medium">Media</h3>
                                 <Button variant="ghost" size="sm">
                                     <MoreHorizontal className="h-4 w-4" />
                                 </Button>
@@ -166,13 +150,13 @@ const VehicleDetailScreen = ({ vehicleId }: { vehicleId: string }) => {
                                     </div>
                                 )}
                             </div>
-                        </div>
+                        </DefaultCard>
 
                         {/* Service Appointments */}
                         {vehicle?.appointments && vehicle.appointments.length > 0 && (
-                            <div className="bg-white border border-gray-200 rounded-lg">
-                                <div className="p-6 border-b border-gray-200 flex items-center justify-between">
-                                    <h3 className="text-lg font-medium text-gray-900">Service Appointments</h3>
+                            <DefaultCard>
+                                <div className="p-6 border-b  flex items-center justify-between">
+                                    <h3 className="text-lg font-medium">Service Appointments</h3>
                                     <Button variant="ghost" size="sm">
                                         <MoreHorizontal className="h-4 w-4" />
                                     </Button>
@@ -186,21 +170,21 @@ const VehicleDetailScreen = ({ vehicleId }: { vehicleId: string }) => {
                                                         <Calendar className="h-4 w-4 text-blue-600" />
                                                     </div>
                                                     <div>
-                                                        <p className="font-medium text-gray-900">Appointment #{index + 1}</p>
-                                                        <p className="text-sm text-gray-500">{appointment.date} at {appointment.time}</p>
+                                                        <p className="font-medium">Appointment #{index + 1}</p>
+                                                        <p className="text-sm">{formatDateTime(appointment.date)}</p>
                                                     </div>
                                                 </div>
                                                 <AppointmentStatusBadge status={appointment.status as any} />
                                             </div>
 
                                             {appointment.service_center && (
-                                                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                                                <div className="rounded-lg p-4">
                                                     <div className="flex items-start space-x-3">
-                                                        <MapPin className="h-4 w-4 text-gray-500 mt-0.5" />
+                                                        <MapPin className="h-4 w-4 mt-0.5" />
                                                         <div>
-                                                            <p className="font-medium text-gray-900">{appointment.service_center.name}</p>
+                                                            <p className="font-medium">{appointment.service_center.name}</p>
                                                             {appointment.service_center.locations?.address && (
-                                                                <p className="text-sm text-gray-500">{appointment.service_center.locations.address}</p>
+                                                                <p className="text-sm">{appointment.service_center.locations.address}</p>
                                                             )}
                                                         </div>
                                                     </div>
@@ -209,18 +193,18 @@ const VehicleDetailScreen = ({ vehicleId }: { vehicleId: string }) => {
 
                                             {appointment.items && appointment.items.length > 0 && (
                                                 <div className="space-y-3">
-                                                    <h5 className="text-sm font-medium text-gray-900">Service Items</h5>
+                                                    <h5 className="text-sm font-medium">Service Items</h5>
                                                     <div className="space-y-2">
                                                         {appointment.items.map((item) => (
-                                                            <div key={item.id} className="flex items-center justify-between py-2 px-3 bg-gray-50 rounded-lg">
-                                                                <span className="text-sm text-gray-900">{item.service?.name}</span>
-                                                                <span className="text-sm font-medium text-gray-900">${item.service?.price?.toFixed(2)}</span>
+                                                            <div key={item.id} className="flex items-center justify-between py-2 px-3 rounded-lg">
+                                                                <span className="text-sm">{item.service?.name}</span>
+                                                                <span className="text-sm font-medium">${item.service?.price?.toFixed(2)}</span>
                                                             </div>
                                                         ))}
                                                     </div>
-                                                    <div className="flex justify-between items-center pt-2 border-t border-gray-200">
-                                                        <span className="text-sm font-medium text-gray-900">Total</span>
-                                                        <span className="font-semibold text-gray-900">
+                                                    <div className="flex justify-between items-center pt-2 border-t ">
+                                                        <span className="text-sm font-medium">Total</span>
+                                                        <span className="font-semibold">
                                                             ${appointment.items.reduce((sum, item) => sum + (item.service?.price || 0), 0).toFixed(2)}
                                                         </span>
                                                     </div>
@@ -231,16 +215,16 @@ const VehicleDetailScreen = ({ vehicleId }: { vehicleId: string }) => {
                                         </div>
                                     ))}
                                 </div>
-                            </div>
+                            </DefaultCard>
                         )}
                     </div>
 
                     {/* Right Column */}
                     <div className="space-y-6">
                         {/* Owner Information */}
-                        <div className="bg-white border border-gray-200 rounded-lg">
-                            <div className="p-6 border-b border-gray-200 flex items-center justify-between">
-                                <h3 className="text-lg font-medium text-gray-900">Owner Information</h3>
+                        <DefaultCard>
+                            <div className="p-6 border-b border-gray flex items-center justify-between">
+                                <h3 className="text-lg font-medium">Owner Information</h3>
                                 <Button variant="ghost" size="sm">
                                     <MoreHorizontal className="h-4 w-4" />
                                 </Button>
@@ -251,80 +235,66 @@ const VehicleDetailScreen = ({ vehicleId }: { vehicleId: string }) => {
                                         <User className="h-4 w-4 text-gray-600" />
                                     </div>
                                     <div>
-                                        <p className="text-sm font-medium text-gray-900">Default Owner</p>
-                                        <p className="text-sm text-gray-500">{vehicle.user?.email || 'No email available'}</p>
+                                        <p className="text-sm font-medium">Default Owner</p>
+                                        <p className="text-sm">{vehicle.user?.email || 'No email available'}</p>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </DefaultCard>
 
-                        {/* Vehicle Configuration */}
-                        <div className="bg-white border border-gray-200 rounded-lg">
-                            <div className="p-6 border-b border-gray-200 flex items-center justify-between">
-                                <h3 className="text-lg font-medium text-gray-900">Vehicle Configuration</h3>
-                                <Button variant="ghost" size="sm">
-                                    <MoreHorizontal className="h-4 w-4" />
-                                </Button>
-                            </div>
-                            <div className="p-6 space-y-4">
-                                <div className="flex items-center justify-between">
-                                    <span className="text-sm text-gray-700">Default Configuration</span>
-                                    <span className="text-sm text-gray-500">default</span>
-                                </div>
-                            </div>
-                        </div>
+
 
                         {/* Organize */}
-                        <div className="bg-white border border-gray-200 rounded-lg">
-                            <div className="p-6 border-b border-gray-200 flex items-center justify-between">
-                                <h3 className="text-lg font-medium text-gray-900">Organize</h3>
+                        <DefaultCard>
+                            <div className="p-6 border-b  flex items-center justify-between">
+                                <h3 className="text-lg font-medium">Organize</h3>
                                 <Button variant="ghost" size="sm">
                                     <MoreHorizontal className="h-4 w-4" />
                                 </Button>
                             </div>
                             <div className="p-6 space-y-4">
                                 <div>
-                                    <label className="block text-sm text-gray-700 mb-2">Tags</label>
-                                    <p className="text-sm text-gray-500">-</p>
+                                    <label className="block text-sm mb-2">Tags</label>
+                                    <p className="text-sm">-</p>
                                 </div>
                                 <div>
-                                    <label className="block text-sm text-gray-700 mb-2">Type</label>
-                                    <p className="text-sm text-gray-500">-</p>
+                                    <label className="block text-sm mb-2">Type</label>
+                                    <p className="text-sm">-</p>
                                 </div>
                                 <div>
-                                    <label className="block text-sm text-gray-700 mb-2">Collection</label>
-                                    <p className="text-sm text-gray-500">You May Also Like</p>
+                                    <label className="block text-sm mb-2">Collection</label>
+                                    <p className="text-sm">You May Also Like</p>
                                 </div>
                                 <div>
-                                    <label className="block text-sm text-gray-700 mb-2">Categories</label>
-                                    <p className="text-sm text-gray-500">-</p>
+                                    <label className="block text-sm mb-2">Categories</label>
+                                    <p className="text-sm">-</p>
                                 </div>
                             </div>
-                        </div>
+                        </DefaultCard>
 
                         {/* Attributes */}
-                        <div className="bg-white border border-gray-200 rounded-lg">
-                            <div className="p-6 border-b border-gray-200 flex items-center justify-between">
-                                <h3 className="text-lg font-medium text-gray-900">Attributes</h3>
+                        <DefaultCard>
+                            <div className="p-6 border-b  flex items-center justify-between">
+                                <h3 className="text-lg font-medium">Attributes</h3>
                                 <Button variant="ghost" size="sm">
                                     <MoreHorizontal className="h-4 w-4" />
                                 </Button>
                             </div>
                             <div className="p-6 space-y-4">
                                 <div>
-                                    <label className="block text-sm text-gray-700 mb-2">Engine Type</label>
+                                    <label className="block text-sm">Engine Type</label>
                                     <p className="text-sm text-gray-500">-</p>
                                 </div>
                                 <div>
-                                    <label className="block text-sm text-gray-700 mb-2">Transmission</label>
+                                    <label className="block text-sm mb-2">Transmission</label>
                                     <p className="text-sm text-gray-500">-</p>
                                 </div>
                                 <div>
-                                    <label className="block text-sm text-gray-700 mb-2">Mileage</label>
+                                    <label className="block text-sm mb-2">Mileage</label>
                                     <p className="text-sm text-gray-500">-</p>
                                 </div>
                             </div>
-                        </div>
+                        </DefaultCard>
                     </div>
                 </div>
             </div>

@@ -24,6 +24,7 @@ import {
     Car,
     Wrench,
     ChevronDown,
+    ArrowLeft,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -57,6 +58,38 @@ interface NavigationItem {
     children?: NavigationItem[];
 }
 
+
+const navigationItems: NavigationItem[] = [
+    { icon: Calendar, label: "Appointments", href: "/appointments" },
+    { icon: Wrench, label: "Mechanics", href: "/mechanics" },
+    { icon: Car, label: "Vehicles", href: "/vehicles" },
+    {
+        icon: Building2,
+        label: "Service Centers",
+        href: "/service-centers",
+        children: [
+            { icon: Tag, label: "Services", href: "/service-centers/services" },
+            { icon: Package, label: "Service Bay", href: "/service-centers/service-bay" },
+        ]
+    },
+];
+
+// Separate navigation items for settings
+const settingsNavigationItems: NavigationItem[] = [
+    { icon: Building2, label: "Company", href: "/settings/company" },
+    {
+        icon: Building2,
+        label: "Service Center",
+        href: "/settings/service-center",
+        children: [
+            { icon: Tag, label: "Services", href: "/settings/service-center/services" },
+            { icon: Package, label: "Service Bay", href: "/settings/service-center/service-bay" },
+        ]
+    },
+    { icon: Users, label: "Profile", href: "/settings/profile" },
+];
+
+
 const SideBar = ({ className }: SideBarProps) => {
     const [isOpen, setIsOpen] = useState(false);
     const [expandedItem, setExpandedItem] = useState<string | null>(null);
@@ -64,8 +97,8 @@ const SideBar = ({ className }: SideBarProps) => {
     const pathname = usePathname();
     const router = useRouter();
 
-
     const { logoutMutation } = useAuthTanstack();
+
     // Set initial expanded state based on current path
     React.useEffect(() => {
         const currentParent = navigationItems.find(item =>
@@ -74,22 +107,8 @@ const SideBar = ({ className }: SideBarProps) => {
         if (currentParent) {
             setExpandedItem(currentParent.label);
         }
-    }, [pathname]);
+    }, [pathname, navigationItems]);
 
-    const navigationItems: NavigationItem[] = [
-        { icon: Calendar, label: "Appointments", href: "/appointments" },
-        { icon: Wrench, label: "Mechanics", href: "/mechanics" },
-        { icon: Car, label: "Vehicles", href: "/vehicles" },
-        {
-            icon: Building2,
-            label: "Service Centers",
-            href: "/service-centers",
-            children: [
-                { icon: Tag, label: "Services", href: "/service-centers/services" },
-                { icon: Package, label: "Service Bay", href: "/service-centers/service-bay" },
-            ]
-        },
-    ];
 
     const handleItemClick = (item: NavigationItem) => {
         if (item.children) {
@@ -101,6 +120,11 @@ const SideBar = ({ className }: SideBarProps) => {
         if (item.href) {
             router.push(item.href);
         }
+        setIsOpen(false);
+    };
+
+    const handleSettingsClick = () => {
+        router.push("/settings/company");
         setIsOpen(false);
     };
 
@@ -186,7 +210,9 @@ const SideBar = ({ className }: SideBarProps) => {
             onClick: () => setTheme(theme === 'light' ? 'dark' : 'light')
         },
         {
-            icon: LogOut, label: "Log out", onClick: () => {
+            icon: LogOut,
+            label: "Log out",
+            onClick: () => {
                 logoutMutation.mutate();
             }
         },
@@ -197,45 +223,72 @@ const SideBar = ({ className }: SideBarProps) => {
             {/* Store Header */}
             <div className="p-4 flex items-center gap-2 border-b">
                 <div className="w-full">
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="w-full justify-start h-10">
-                                <div className="flex items-center w-full justify-between">
-                                    <div className="flex items-center gap-2">
-                                        <Avatar className="h-8 w-8">
-                                            <AvatarFallback>N</AvatarFallback>
-                                        </Avatar>
-                                        <div className="flex flex-col items-start">
-                                            <span className="font-semibold">Hakim Store</span>
-                                            <span className="text-sm text-muted-foreground">Store</span>
+                    {pathname.startsWith("/settings") ? (
+                        <Button variant="ghost" className="w-full justify-start h-10" onClick={() => router.push("/dashboard")}>
+                            <ArrowLeft className="h-4 w-4" />
+                            <span className="ml-2">Settings</span>
+                        </Button>
+                    ) : (
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" className="w-full justify-start h-10">
+                                    <div className="flex items-center w-full justify-between">
+                                        <div className="flex items-center gap-2">
+                                            <Avatar className="h-8 w-8">
+                                                <AvatarFallback>N</AvatarFallback>
+                                            </Avatar>
+                                            <div className="flex flex-col items-start">
+                                                <span className="font-semibold">Hakim Store</span>
+                                                <span className="text-sm text-muted-foreground">Store</span>
+                                            </div>
                                         </div>
+                                        <Menu className="h-4 w-4" />
                                     </div>
-                                    <Menu className="h-4 w-4" />
-                                </div>
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="start" className="w-56">
-                            {storeSettingsItems.map((item) => (
-                                <DropdownMenuItem
-                                    key={item.label}
-                                    className="gap-2"
-                                    onClick={() => setIsOpen(false)}
-                                >
-                                    <item.icon className="h-4 w-4" />
-                                    <span>{item.label}</span>
-                                </DropdownMenuItem>
-                            ))}
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="start" className="w-56">
+                                {storeSettingsItems.map((item) => (
+                                    <DropdownMenuItem
+                                        key={item.label}
+                                        className="gap-2"
+                                        onClick={() => setIsOpen(false)}
+                                    >
+                                        <item.icon className="h-4 w-4" />
+                                        <span>{item.label}</span>
+                                    </DropdownMenuItem>
+                                ))}
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    )}
                 </div>
             </div>
 
             {/* Main Navigation */}
             <nav className="flex-1 overflow-y-auto">
                 <ul className="p-2 space-y-1">
-                    {navigationItems.map(renderNavigationItem)}
+                    {pathname.startsWith("/settings")
+                        ? settingsNavigationItems.map(renderNavigationItem)
+                        : navigationItems.map(renderNavigationItem)
+                    }
                 </ul>
             </nav>
+
+            {/* Settings Item - Show only when not in settings */}
+            {!pathname.startsWith("/settings") && (
+                <div className="border-t p-2">
+                    <Button
+                        variant="ghost"
+                        className={cn(
+                            "w-full justify-start gap-2 h-10",
+                            pathname === "/settings/company" && "bg-muted font-medium"
+                        )}
+                        onClick={handleSettingsClick}
+                    >
+                        <Settings className="h-4 w-4" />
+                        <span>Settings</span>
+                    </Button>
+                </div>
+            )}
 
             {/* User Settings */}
             <div className="border-t p-2">

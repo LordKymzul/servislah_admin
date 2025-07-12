@@ -39,6 +39,7 @@ import { Badge } from "@/components/ui/badge";
 import { VehicleModel } from "../../../data/entities/model/vehicle-model";
 import { UsersModel } from "@/src/modules/users/data/entities/model/users-model";
 import Link from "next/link";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface VehiclesDataTableProps {
   data: VehicleModel[];
@@ -85,8 +86,13 @@ const columns: ColumnDef<VehicleModel>[] = [
       const color = row.original.color;
       return (
         <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center w-10 h-10 bg-primary/10 rounded-lg">
-            <Car className="h-5 w-5 text-primary" />
+          <div className="flex items-center justify-center w-10 h-10 rounded-lg">
+            <Avatar>
+              <AvatarFallback className="bg-primary/10 text-primary">
+                CN
+              </AvatarFallback>
+              <AvatarImage src={row.original.images?.[0] || ""} />
+            </Avatar>
           </div>
           <div>
             <div className="font-medium">
@@ -132,8 +138,8 @@ const columns: ColumnDef<VehicleModel>[] = [
       const owner = row.getValue("user") as UsersModel | null;
       return (
         <div>
-          <div className="font-medium">{owner?.name || "N/A"}</div>
-          <div className="text-sm text-muted-foreground">{owner?.email}</div>
+          <div className="font-medium text-muted-foreground text-xs">Email</div>
+          <div className="text-sm">{owner?.email}</div>
         </div>
       );
     },
