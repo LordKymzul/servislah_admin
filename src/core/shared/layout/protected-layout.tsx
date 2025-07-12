@@ -2,13 +2,13 @@
 import { useAuthTanstack } from '@/src/modules/auth/presentation/tanstack/auth-tanstack';
 import { Loader2 } from 'lucide-react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
-import { useEffect } from 'react'
+import { Suspense, useEffect } from 'react'
 
 interface ProtectedLayoutProps {
     children: React.ReactNode
 }
 
-export default function ProtectedLayout({ children }: ProtectedLayoutProps) {
+function ProtectedLayoutContent({ children }: ProtectedLayoutProps) {
     const { isAuthenticated, isLoading } = useAuthTanstack()
     const router = useRouter()
     const pathname = usePathname()
@@ -19,12 +19,10 @@ export default function ProtectedLayout({ children }: ProtectedLayoutProps) {
     useEffect(() => {
         if (!isLoading) {
             if (isDashboardRoute && !isAuthenticated) {
-                // Fix: Ensure proper URL construction for redirect
                 router.push(`/login`);
             } else if (isAuthenticated) {
                 const redirectTo = searchParams.get('redirect');
                 if (redirectTo) {
-                    // Fix: Ensure we're handling the redirect path correctly
                     router.replace(redirectTo);
                     return;
                 }
@@ -49,4 +47,16 @@ export default function ProtectedLayout({ children }: ProtectedLayoutProps) {
     }
 
     return <>{children}</>;
+}
+
+export default function ProtectedLayout({ children }: ProtectedLayoutProps) {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen flex items-center justify-center">
+                <Loader2 className="w-10 h-10 animate-spin" />
+            </div>
+        }>
+            <ProtectedLayoutContent>{children}</ProtectedLayoutContent>
+        </Suspense>
+    );
 }
