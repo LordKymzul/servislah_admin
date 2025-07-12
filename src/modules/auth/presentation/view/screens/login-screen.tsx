@@ -15,7 +15,11 @@ import { useAuthTanstack } from "../../tanstack/auth-tanstack";
 
 const LoginScreen = () => {
     const router = useRouter();
-    const { loginMutation, isLoading } = useAuthTanstack();
+    const {
+        loginMutation,
+        isLoading,
+        loginWithGoogle
+    } = useAuthTanstack();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
@@ -28,7 +32,7 @@ const LoginScreen = () => {
         });
     }
     const handleGoogleLogin = () => {
-        toast.success("Google login is not available yet");
+        loginWithGoogle();
     };
 
     return (

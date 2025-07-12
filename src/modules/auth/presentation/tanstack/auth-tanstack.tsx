@@ -3,9 +3,10 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { customLogin, customRegister } from "../../data/services/auth-api.service";
+import { customLogin, customRegister, handleGoogleCallback } from "../../data/services/auth-api.service";
 import { LoginDto } from "../../data/entities/dto/login-dto";
 import { RegisterDto } from "../../data/entities/dto/register-dto";
+import { useGoogleLogin } from "@react-oauth/google";
 
 interface UserSessionModel {
     id: string;
@@ -52,6 +53,50 @@ export const useAuthTanstack = () => {
         }
     };
 
+    const googleLogin = useGoogleLogin({
+        flow: "auth-code",
+        scope: "email profile",
+        onSuccess: async (response) => {
+            try {
+                if (response.code) {
+                    const authResponse = await handleGoogleCallback(response.code);
+
+                    if (authResponse && authResponse.user_id) {
+                        const userData = {
+                            id: authResponse.user_id,
+                            email: authResponse.email,
+                            name: authResponse.email.split("@")[0],
+                            backend_tokens: {
+                                access_token: authResponse.backend_tokens.access_token,
+                                refresh_token: authResponse.backend_tokens.refresh_token,
+                            },
+                        };
+
+                        setUser(userData as unknown as UserSessionModel);
+                        setIsAuthenticated(true);
+                        localStorage.setItem("user", JSON.stringify(userData));
+
+                        queryClient.invalidateQueries({ queryKey: ["user"] });
+                        toast.success("Successfully logged in with Google");
+                        router.replace('/dashboard');
+                    }
+                }
+            } catch (error) {
+                toast.error("Google login callback failed");
+                router.push("/");
+                console.error("Login error:", error);
+            }
+        },
+        onError: (errorResponse) => {
+            const errorMessage =
+                errorResponse.error_description ||
+                errorResponse.error ||
+                "Login failed";
+            toast.error(errorMessage);
+            console.log("Login Failed:", errorResponse);
+        },
+    });
+
     const loginMutation = useMutation({
         mutationFn: async (loginDto: LoginDto) => {
             setIsLoading(true);
@@ -63,6 +108,7 @@ export const useAuthTanstack = () => {
                 const userData = {
                     id: data.user_id,
                     email: data.email,
+                    name: data.email.split("@")[0],
                     backend_tokens: {
                         access_token: data.backend_tokens.access_token,
                         refresh_token: data.backend_tokens.refresh_token,
@@ -87,6 +133,17 @@ export const useAuthTanstack = () => {
         onSettled: () => {
             setIsLoading(false);
         }
+    });
+
+    const loginWithGoogleMutation = useMutation({
+        mutationFn: async () => {
+            googleLogin();
+            return null;
+        },
+        onError: (error: Error) => {
+            toast.error("Login failed due to: " + error.message);
+            console.log(error);
+        },
     });
 
     const registerMutation = useMutation({
@@ -167,5 +224,6 @@ export const useAuthTanstack = () => {
         login: (loginDto: LoginDto) => loginMutation.mutate(loginDto),
         logout: () => logoutMutation.mutate(),
         refreshAuth: checkAuth,
+        loginWithGoogle: () => loginWithGoogleMutation.mutate(),
     };
 };
