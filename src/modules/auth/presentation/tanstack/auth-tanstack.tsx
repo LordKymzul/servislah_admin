@@ -19,7 +19,6 @@ interface UserSessionModel {
 
 export const useAuthTanstack = () => {
     const router = useRouter();
-    const searchParams = useSearchParams();
     const queryClient = useQueryClient();
     const [user, setUser] = useState<UserSessionModel | null>(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);

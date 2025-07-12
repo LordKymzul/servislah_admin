@@ -7,6 +7,7 @@ import { Toaster } from "sonner";
 import { ThemeProvider } from "@/src/core/theme/theme-provider";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { GOOGLE_CLIENT_ID } from "@/src/core/util/constant";
+import { Suspense } from "react";
 
 
 const geistSans = Geist({
@@ -72,7 +73,9 @@ export default function RootLayout({
               clientId={GOOGLE_CLIENT_ID || ''}
             >
               <ProtectedLayout>
-                {children}
+                <Suspense>
+                  {children}
+                </Suspense>
               </ProtectedLayout>
             </GoogleOAuthProvider>
             <Toaster />
