@@ -3,8 +3,9 @@ import MechanicDetailScreen from "@/src/modules/mechanics/presentation/view/scre
 
 
 
-const MechanicDetailPage = ({ params }: PageProps) => {
-    return <MechanicDetailScreen mechanicId={params.id} />
+const MechanicDetailPage = async (props: { params: Promise<{ id: string }> }) => {
+    const mechanicID = (await props.params).id;
+    return <MechanicDetailScreen mechanicId={mechanicID} />
 }
 
 export default MechanicDetailPage;  
