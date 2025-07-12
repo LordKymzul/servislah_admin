@@ -16,8 +16,12 @@ let appointments: AppointmentModel[] = [
         vehicle_id: "1",
         mechanic_id: "1",
         service_bay_id: "1",
-        service_center: null,
-        user: null,
+        service_center: undefined,
+        user: undefined,
+        items: undefined,
+        vehicle: undefined,
+        mechanic: undefined,
+        service_bay: undefined,
     }
 ]
 

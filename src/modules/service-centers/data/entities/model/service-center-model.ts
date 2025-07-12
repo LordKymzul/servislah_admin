@@ -23,6 +23,21 @@ export interface ServiceCenterOperatingHour {
     updated_at?: string;
 }
 
+export interface ServiceCenterService {
+    id?: string;
+    name?: string;
+    description?: string;
+    price?: number;
+    duration?: number;
+    is_active?: boolean;
+    service_center_id?: string;
+    service_center?: ServiceCenterModel;
+    appoinment_items?: any;
+    created_at?: string;
+    updated_at?: string;
+}
+
+
 export interface ServiceCenterModel {
     id?: string;
     name?: string;
@@ -33,7 +48,7 @@ export interface ServiceCenterModel {
     company?: any;
     mechanics?: any[];
     specializations?: any[];
-    services?: any[];
+    services?: ServiceCenterService[];
     locations?: ServiceCenterLocation;
     appointments?: any;
     operating_hours?: ServiceCenterOperatingHour[];

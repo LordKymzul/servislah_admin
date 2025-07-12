@@ -43,6 +43,7 @@ import {
 import Link from "next/link";
 import { useState } from "react";
 import React from "react";
+import { useAuthTanstack } from "@/src/modules/auth/presentation/tanstack/auth-tanstack";
 
 interface SideBarProps {
     className?: string;
@@ -63,6 +64,8 @@ const SideBar = ({ className }: SideBarProps) => {
     const pathname = usePathname();
     const router = useRouter();
 
+
+    const { logoutMutation } = useAuthTanstack();
     // Set initial expanded state based on current path
     React.useEffect(() => {
         const currentParent = navigationItems.find(item =>
@@ -182,7 +185,11 @@ const SideBar = ({ className }: SideBarProps) => {
             label: "Theme",
             onClick: () => setTheme(theme === 'light' ? 'dark' : 'light')
         },
-        { icon: LogOut, label: "Log out" },
+        {
+            icon: LogOut, label: "Log out", onClick: () => {
+                logoutMutation.mutate();
+            }
+        },
     ];
 
     const SidebarContent = () => (

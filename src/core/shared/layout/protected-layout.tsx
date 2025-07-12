@@ -20,7 +20,7 @@ export default function ProtectedLayout({ children }: ProtectedLayoutProps) {
         if (!isLoading) {
             if (isDashboardRoute && !isAuthenticated) {
                 // Fix: Ensure proper URL construction for redirect
-                router.push(`/login?redirect=${encodeURIComponent(pathname)}`);
+                router.push(`/login`);
             } else if (isAuthenticated) {
                 const redirectTo = searchParams.get('redirect');
                 if (redirectTo) {

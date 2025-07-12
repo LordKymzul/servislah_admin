@@ -1,3 +1,9 @@
+import { ServiceBayModel } from "@/src/modules/service-bays/data/entities/model/service-bay-model";
+import { MechanicModel } from "@/src/modules/mechanics/data/entities/model/mechanic-model";
+import { UsersModel } from "@/src/modules/users/data/entities/model/users-model";
+import { VehicleModel } from "@/src/modules/vehicles/data/entities/model/vehicle-model";
+import { ServiceCenterModel, ServiceCenterService } from "@/src/modules/service-centers/data/entities/model/service-center-model";
+
 export class AppointmentModel {
     id?: string;
     service_center_id?: string;
@@ -5,11 +11,12 @@ export class AppointmentModel {
     vehicle_id?: string;
     mechanic_id?: string;
     service_bay_id?: string;
-    service_center?: any;
-    user?: any;
-    vehicle?: any;
-    mechanic?: any;
-    service_bay?: any[]
+    service_center?: ServiceCenterModel;
+    user?: UsersModel;
+    vehicle?: VehicleModel;
+    mechanic?: MechanicModel;
+    service_bay?: ServiceBayModel;
+    items?: AppointmentItemModel[];
     date?: string;
     time?: string;
     status?: string;
@@ -17,3 +24,14 @@ export class AppointmentModel {
     updated_at?: Date;
 }
 
+
+
+export interface AppointmentItemModel {
+    id?: string;
+    appointment_id?: string;
+    appointment?: AppointmentModel;
+    service_id?: string;
+    service?: ServiceCenterService;
+    created_at?: Date;
+    updated_at?: Date;
+}

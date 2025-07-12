@@ -1,24 +1,25 @@
+import { MetadataModel } from "@/src/core/shared/entities/model/metadata-model";
+import { AppointmentModel } from "@/src/modules/appointments/data/entities/model/appointment-model";
+import { UsersModel } from "@/src/modules/users/data/entities/model/users-model";
+
 export interface VehicleModel {
   id?: string;
-  make?: string;
   model?: string;
   year?: number;
   color?: string;
   license_plate?: string;
-  vin?: string;
-  owner?: {
-    id?: string;
-    name?: string;
-    email?: string;
-  };
+  user?: UsersModel | null;
   user_id?: string;
-  last_service_date?: string;
-  next_service_date?: string;
-  mileage?: number;
   fuel_type?: string;
-  transmission?: string;
-  engine_size?: string;
-  status?: "ACTIVE" | "INACTIVE" | "MAINTENANCE";
+  images?: string[];
+  appointments?: AppointmentModel[];
   created_at?: string;
   updated_at?: string;
+}
+
+
+
+export interface VehicleResponseModel {
+  vehicles: VehicleModel[];
+  metadata: MetadataModel;
 }

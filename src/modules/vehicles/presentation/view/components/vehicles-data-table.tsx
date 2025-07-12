@@ -37,6 +37,8 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { VehicleModel } from "../../../data/entities/model/vehicle-model";
+import { UsersModel } from "@/src/modules/users/data/entities/model/users-model";
+import Link from "next/link";
 
 interface VehiclesDataTableProps {
   data: VehicleModel[];
@@ -116,7 +118,7 @@ const columns: ColumnDef<VehicleModel>[] = [
     ),
   },
   {
-    accessorKey: "owner",
+    accessorKey: "user",
     header: ({ column }) => (
       <Button
         variant="ghost"
@@ -127,10 +129,7 @@ const columns: ColumnDef<VehicleModel>[] = [
       </Button>
     ),
     cell: ({ row }) => {
-      const owner = row.getValue("owner") as {
-        name?: string;
-        email?: string;
-      } | null;
+      const owner = row.getValue("user") as UsersModel | null;
       return (
         <div>
           <div className="font-medium">{owner?.name || "N/A"}</div>
@@ -167,47 +166,7 @@ const columns: ColumnDef<VehicleModel>[] = [
       );
     },
   },
-  {
-    accessorKey: "transmission",
-    header: "Transmission",
-    cell: ({ row }) => <div>{row.getValue("transmission")}</div>,
-  },
-  {
-    accessorKey: "last_service_date",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Last Service
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-    cell: ({ row }) => {
-      const date = row.getValue("last_service_date") as string;
-      return <div>{date || "N/A"}</div>;
-    },
-  },
-  {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => {
-      const status = row.getValue("status") as string;
-      return (
-        <Badge
-          variant={
-            status === "ACTIVE"
-              ? "default"
-              : status === "MAINTENANCE"
-              ? "destructive"
-              : "secondary"
-          }
-        >
-          {status}
-        </Badge>
-      );
-    },
-  },
+
   {
     id: "actions",
     enableHiding: false,
@@ -225,12 +184,16 @@ const columns: ColumnDef<VehicleModel>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(vehicle.vin || "")}
+              onClick={() => navigator.clipboard.writeText(vehicle.license_plate || "")}
             >
               Copy VIN
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>View details</DropdownMenuItem>
+            <DropdownMenuItem>
+              <Link href={`/vehicles/${vehicle.id}`}>
+                View details
+              </Link>
+            </DropdownMenuItem>
             <DropdownMenuItem>Schedule service</DropdownMenuItem>
             <DropdownMenuItem>Edit vehicle</DropdownMenuItem>
             <DropdownMenuSeparator />
@@ -320,9 +283,9 @@ export function VehiclesDataTable({ data }: VehiclesDataTableProps) {
                     {header.isPlaceholder
                       ? null
                       : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
                   </TableHead>
                 ))}
               </TableRow>

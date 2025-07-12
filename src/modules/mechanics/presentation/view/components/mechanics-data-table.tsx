@@ -36,6 +36,8 @@ import {
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { MechanicModel } from "../../../data/entities/model/mechanic-model"
+import { SpecializationModel } from "@/src/modules/specialization/data/entities/model/specialization-model"
+import Link from "next/link"
 
 const columns: ColumnDef<MechanicModel>[] = [
     {
@@ -125,6 +127,14 @@ const columns: ColumnDef<MechanicModel>[] = [
         cell: ({ row }) => <div>{row.getValue("years_of_exp")} years</div>,
     },
     {
+        accessorKey: "specializations",
+        header: "Specializations",
+        cell: ({ row }) => {
+            const specializations = row.getValue("specializations") as SpecializationModel[]
+            return <div className="flex flex-wrap gap-2">{specializations.map((specialization) => <Badge className="capitalize mr-2" key={specialization.id}>{specialization.name}</Badge>)}</div>
+        },
+    },
+    {
         accessorKey: "is_active",
         header: "Status",
         cell: ({ row }) => {
@@ -136,6 +146,7 @@ const columns: ColumnDef<MechanicModel>[] = [
             )
         },
     },
+
     {
         id: "actions",
         enableHiding: false,
@@ -152,7 +163,9 @@ const columns: ColumnDef<MechanicModel>[] = [
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem>View Details</DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                            <Link href={`/mechanics/${mechanic.id}`}>View Details</Link>
+                        </DropdownMenuItem>
                         <DropdownMenuItem>Edit Mechanic</DropdownMenuItem>
                         <DropdownMenuItem className="text-red-600">
                             {mechanic.is_active ? 'Deactivate' : 'Activate'} Mechanic

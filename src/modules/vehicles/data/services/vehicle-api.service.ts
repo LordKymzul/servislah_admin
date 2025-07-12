@@ -1,204 +1,42 @@
+import { axiosInstance } from "@/src/core/util/config";
 import { QueryVehicleDto } from "../entities/dto/query-vehicle.dto";
-import { VehicleModel } from "../entities/model/vehicle-model";
+import { VehicleModel, VehicleResponseModel } from "../entities/model/vehicle-model";
+import { MetadataModel } from "@/src/core/shared/entities/model/metadata-model";
+import { AxiosError } from "axios";
 
-let vehicles: VehicleModel[] = [
-  {
-    id: "1",
-    make: "Toyota",
-    model: "Camry",
-    year: 2020,
-    color: "Silver",
-    license_plate: "ABC-1234",
-    vin: "1HGCM82633A123456",
-    owner: {
-      id: "1",
-      name: "John Doe",
-      email: "john.doe@example.com",
-    },
-    user_id: "1",
-    last_service_date: "2024-01-15",
-    next_service_date: "2024-07-15",
-    mileage: 45000,
-    fuel_type: "Gasoline",
-    transmission: "Automatic",
-    engine_size: "2.5L",
-    status: "ACTIVE",
-    created_at: "2024-01-01T10:00:00Z",
-    updated_at: "2024-01-15T15:30:00Z",
-  },
-  {
-    id: "2",
-    make: "Honda",
-    model: "Civic",
-    year: 2019,
-    color: "Blue",
-    license_plate: "XYZ-9876",
-    vin: "2HGFC2F59JH123456",
-    owner: {
-      id: "2",
-      name: "Jane Smith",
-      email: "jane.smith@example.com",
-    },
-    user_id: "2",
-    last_service_date: "2024-02-20",
-    next_service_date: "2024-08-20",
-    mileage: 38000,
-    fuel_type: "Gasoline",
-    transmission: "Manual",
-    engine_size: "1.8L",
-    status: "ACTIVE",
-    created_at: "2024-01-05T09:00:00Z",
-    updated_at: "2024-02-20T14:45:00Z",
-  },
-  {
-    id: "3",
-    make: "Ford",
-    model: "F-150",
-    year: 2021,
-    color: "Red",
-    license_plate: "DEF-5678",
-    vin: "1FTFW1ET5MFA12345",
-    owner: {
-      id: "3",
-      name: "Mike Johnson",
-      email: "mike.johnson@example.com",
-    },
-    user_id: "3",
-    last_service_date: "2024-03-10",
-    next_service_date: "2024-09-10",
-    mileage: 22000,
-    fuel_type: "Gasoline",
-    transmission: "Automatic",
-    engine_size: "3.5L V6",
-    status: "MAINTENANCE",
-    created_at: "2024-01-10T11:00:00Z",
-    updated_at: "2024-03-10T16:20:00Z",
-  },
-  {
-    id: "4",
-    make: "Tesla",
-    model: "Model 3",
-    year: 2022,
-    color: "White",
-    license_plate: "GHI-4321",
-    vin: "5YJ3E1EA6MF123456",
-    owner: {
-      id: "4",
-      name: "Sarah Wilson",
-      email: "sarah.wilson@example.com",
-    },
-    user_id: "4",
-    last_service_date: "2024-01-25",
-    next_service_date: "2024-07-25",
-    mileage: 15000,
-    fuel_type: "Electric",
-    transmission: "Automatic",
-    engine_size: "Electric Motor",
-    status: "ACTIVE",
-    created_at: "2024-01-12T08:00:00Z",
-    updated_at: "2024-01-25T13:10:00Z",
-  },
-  {
-    id: "5",
-    make: "BMW",
-    model: "3 Series",
-    year: 2018,
-    color: "Black",
-    license_plate: "JKL-7890",
-    vin: "WBA8E9G59JA123456",
-    owner: {
-      id: "5",
-      name: "Robert Brown",
-      email: "robert.brown@example.com",
-    },
-    user_id: "5",
-    last_service_date: "2024-02-05",
-    next_service_date: "2024-08-05",
-    mileage: 62000,
-    fuel_type: "Gasoline",
-    transmission: "Automatic",
-    engine_size: "2.0L Turbo",
-    status: "ACTIVE",
-    created_at: "2024-01-08T12:00:00Z",
-    updated_at: "2024-02-05T10:30:00Z",
-  },
-  {
-    id: "6",
-    make: "Mercedes-Benz",
-    model: "C-Class",
-    year: 2020,
-    color: "Silver",
-    license_plate: "MNO-1357",
-    vin: "WDDWF4HB1LR123456",
-    owner: {
-      id: "6",
-      name: "Emily Davis",
-      email: "emily.davis@example.com",
-    },
-    user_id: "6",
-    last_service_date: "2024-03-01",
-    next_service_date: "2024-09-01",
-    mileage: 28000,
-    fuel_type: "Gasoline",
-    transmission: "Automatic",
-    engine_size: "2.0L Turbo",
-    status: "INACTIVE",
-    created_at: "2024-01-15T14:00:00Z",
-    updated_at: "2024-03-01T11:40:00Z",
-  },
-  {
-    id: "7",
-    make: "Audi",
-    model: "A4",
-    year: 2021,
-    color: "Gray",
-    license_plate: "PQR-2468",
-    vin: "WAUENAF40MN123456",
-    owner: {
-      id: "7",
-      name: "David Lee",
-      email: "david.lee@example.com",
-    },
-    user_id: "7",
-    last_service_date: "2024-02-15",
-    next_service_date: "2024-08-15",
-    mileage: 18000,
-    fuel_type: "Gasoline",
-    transmission: "Automatic",
-    engine_size: "2.0L TFSI",
-    status: "ACTIVE",
-    created_at: "2024-01-20T09:30:00Z",
-    updated_at: "2024-02-15T16:15:00Z",
-  },
-  {
-    id: "8",
-    make: "Chevrolet",
-    model: "Malibu",
-    year: 2019,
-    color: "Blue",
-    license_plate: "STU-3691",
-    vin: "1G1ZD5ST6KF123456",
-    owner: {
-      id: "8",
-      name: "Lisa Anderson",
-      email: "lisa.anderson@example.com",
-    },
-    user_id: "8",
-    last_service_date: "2024-01-30",
-    next_service_date: "2024-07-30",
-    mileage: 41000,
-    fuel_type: "Gasoline",
-    transmission: "Automatic",
-    engine_size: "1.5L Turbo",
-    status: "ACTIVE",
-    created_at: "2024-01-18T13:00:00Z",
-    updated_at: "2024-01-30T09:50:00Z",
-  },
-];
+
 
 export const getVehicles = async (
-  query: QueryVehicleDto
-): Promise<VehicleModel[]> => {
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-  return vehicles;
+  query: QueryVehicleDto,
+  token: string
+): Promise<VehicleResponseModel> => {
+  try {
+    const response = await axiosInstance({ token: token }).get(`/vehicles`, {
+      params: query
+    });
+    let vehicles: VehicleModel[] = response.data.data.vehicles;
+    let metadata: MetadataModel = response.data.data.metadata;
+    return {
+      vehicles,
+      metadata
+    };
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      throw new Error(error.response?.data.message);
+    }
+    throw new Error("Failed to get vehicles");
+  }
+};
+
+
+export const getVehicleById = async (id: string, token: string): Promise<VehicleModel> => {
+  try {
+    const response = await axiosInstance({ token: token }).get(`/vehicles/${id}`);
+    return response.data.data.vehicle;
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      throw new Error(error.response?.data.message);
+    }
+    throw new Error("Failed to get vehicle");
+  }
 };

@@ -7,11 +7,20 @@ import { customLogin, customRegister } from "../../data/services/auth-api.servic
 import { LoginDto } from "../../data/entities/dto/login-dto";
 import { RegisterDto } from "../../data/entities/dto/register-dto";
 
+interface UserSessionModel {
+    id: string;
+    email: string;
+    backend_tokens: {
+        access_token: string;
+        refresh_token: string;
+    };
+}
+
 export const useAuthTanstack = () => {
     const router = useRouter();
     const searchParams = useSearchParams();
     const queryClient = useQueryClient();
-    const [user, setUser] = useState<any>(null);
+    const [user, setUser] = useState<UserSessionModel | null>(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -30,12 +39,14 @@ export const useAuthTanstack = () => {
             } else {
                 setUser(null);
                 setIsAuthenticated(false);
+                router.push('/login');
             }
         } catch (error) {
             console.error("Auth check failed:", error);
             localStorage.removeItem("user");
             setUser(null);
             setIsAuthenticated(false);
+            router.push('/login');
         } finally {
             setIsLoading(false);
         }
@@ -63,19 +74,10 @@ export const useAuthTanstack = () => {
                 localStorage.setItem("user", JSON.stringify(userData));
 
                 queryClient.invalidateQueries({ queryKey: ["user"] });
-
                 toast.success("Successfully logged in");
-
-                // Handle redirect after successful login
-                const redirectTo = searchParams.get('redirect');
-                if (redirectTo) {
-                    router.replace(redirectTo);
-                } else {
-                    router.replace("/dashboard");
-                }
+                router.replace('/dashboard');
             } else {
-                toast.error("Failed to process login");
-                router.replace("/login");
+                throw new Error("Failed to process login");
             }
         },
         onError: (error: Error) => {
@@ -128,15 +130,27 @@ export const useAuthTanstack = () => {
 
     const logoutMutation = useMutation({
         mutationFn: async () => {
-            localStorage.removeItem("user");
+            // Clear all storage
+            localStorage.clear();
+            sessionStorage.clear();
+
+            // Reset all states
             setUser(null);
             setIsAuthenticated(false);
+            setIsLoading(false);
+
+            // Clear all queries and cache
             queryClient.clear();
+            queryClient.removeQueries();
+
+            // Force a router refresh to ensure clean slate
+            router.refresh();
+
             return true;
         },
         onSuccess: () => {
             toast.success("Successfully logged out");
-            router.push("/");
+            router.replace("/login");
         },
         onError: (error: Error) => {
             toast.error("Logout failed: " + error.message);
