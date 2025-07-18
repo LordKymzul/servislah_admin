@@ -5,4 +5,8 @@ export interface RegisterResponseModel {
         access_token: string;
         refresh_token: string;
     }
+    metadata: {
+        admin_id: string;
+        service_center_id: string;
+    }
 }

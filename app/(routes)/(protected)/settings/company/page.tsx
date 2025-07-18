@@ -1,5 +1,9 @@
+import CompanyScreen from "@/src/modules/companies/presentation/view/screens/company-screen";
+
 const CompanyPage = () => {
-    return <div>CompanyPage</div>;
+    return (
+        <CompanyScreen />
+    )
 };
 
 export default CompanyPage;

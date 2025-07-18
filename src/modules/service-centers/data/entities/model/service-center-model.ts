@@ -1,3 +1,5 @@
+import { MechanicModel } from "@/src/modules/mechanics/data/entities/model/mechanic-model";
+
 export interface ServiceCenterLocation {
     id?: string;
     service_center_id?: string;
@@ -46,8 +48,8 @@ export interface ServiceCenterModel {
     image?: string;
     company_id?: string;
     company?: any;
-    mechanics?: any[];
-    specializations?: any[];
+    mechanics?: MechanicModel[];
+    specializations?: SpecializationModel[];
     services?: ServiceCenterService[];
     locations?: ServiceCenterLocation;
     appointments?: any;
@@ -56,5 +58,14 @@ export interface ServiceCenterModel {
     service_bays?: any;
     created_at?: string;
     updated_at?: string;
+}
+
+
+export interface SpecializationModel {
+    id?: string;
+    name?: string;
+    description?: string;
+    service_center_id?: string;
+    service_center?: ServiceCenterModel;
 }
 

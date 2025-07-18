@@ -15,6 +15,10 @@ interface UserSessionModel {
         access_token: string;
         refresh_token: string;
     };
+    metadata: {
+        admin_id: string;
+        service_center_id: string;
+    }
 }
 
 export const useAuthTanstack = () => {
@@ -69,6 +73,10 @@ export const useAuthTanstack = () => {
                                 access_token: authResponse.backend_tokens.access_token,
                                 refresh_token: authResponse.backend_tokens.refresh_token,
                             },
+                            metadata: {
+                                admin_id: authResponse.metadata.admin_id,
+                                service_center_id: authResponse.metadata.service_center_id,
+                            }
                         };
 
                         setUser(userData as unknown as UserSessionModel);
@@ -112,6 +120,10 @@ export const useAuthTanstack = () => {
                         access_token: data.backend_tokens.access_token,
                         refresh_token: data.backend_tokens.refresh_token,
                     },
+                    metadata: {
+                        admin_id: data.metadata.admin_id,
+                        service_center_id: data.metadata.service_center_id,
+                    }
                 };
 
                 setUser(userData);
@@ -160,6 +172,10 @@ export const useAuthTanstack = () => {
                         access_token: data.backend_tokens.access_token,
                         refresh_token: data.backend_tokens.refresh_token,
                     },
+                    metadata: {
+                        admin_id: data.metadata.admin_id,
+                        service_center_id: data.metadata.service_center_id,
+                    }
                 };
 
                 setUser(userData);

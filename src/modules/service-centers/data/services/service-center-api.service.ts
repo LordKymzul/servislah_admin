@@ -1,4 +1,7 @@
+import { axiosInstance } from "@/src/core/util/config";
 import { ServiceCenterModel } from "../entities/model/service-center-model";
+import { AxiosError } from "axios";
+import { QueryServiceCenterDto } from "../entities/dto/query-service-center.dto";
 
 let serviceCenters: ServiceCenterModel[] = [
     {
@@ -45,7 +48,27 @@ let serviceCenters: ServiceCenterModel[] = [
     }
 ];
 
-export const getServiceCenters = async (): Promise<ServiceCenterModel[]> => {
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    return serviceCenters;
+export const getServiceCenters = async (token: string, query: QueryServiceCenterDto): Promise<ServiceCenterModel[]> => {
+    try {
+        const response = await axiosInstance({ token: token }).get(`/service-centers`, { params: query });
+        return response.data.data.service_centers;
+    } catch (error) {
+        if (error instanceof AxiosError) {
+            throw new Error(error.response?.data.message || "Failed to get service centers");
+        }
+        throw new Error("Failed to get service centers");
+    }
+}
+
+
+export const getServiceCenterById = async (token: string, id: string): Promise<ServiceCenterModel> => {
+    try {
+        const response = await axiosInstance({ token: token }).get(`/service-centers/${id}`);
+        return response.data.data.service_center;
+    } catch (error) {
+        if (error instanceof AxiosError) {
+            throw new Error(error.response?.data.message || "Failed to get service center");
+        }
+        throw new Error("Failed to get service center");
+    }
 }

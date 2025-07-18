@@ -1,6 +1,8 @@
 export interface QueryServiceCenterDto {
-    name?: string;
-    address?: string;
-    phone?: string;
-    email?: string;
+    admin_id?: string;
+    company_id?: string;
+    mechanic_id?: string;
+    page?: number;
+    limit?: number;
+
 }

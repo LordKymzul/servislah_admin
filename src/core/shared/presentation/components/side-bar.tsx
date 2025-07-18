@@ -97,7 +97,10 @@ const SideBar = ({ className }: SideBarProps) => {
     const pathname = usePathname();
     const router = useRouter();
 
-    const { logoutMutation } = useAuthTanstack();
+    const {
+        user,
+        logoutMutation
+    } = useAuthTanstack();
 
     // Set initial expanded state based on current path
     React.useEffect(() => {
@@ -218,7 +221,7 @@ const SideBar = ({ className }: SideBarProps) => {
         },
     ];
 
-    const SidebarContent = () => (
+    const SidebarContent = ({ email }: { email: string }) => (
         <>
             {/* Store Header */}
             <div className="p-4 flex items-center gap-2 border-b">
@@ -298,7 +301,7 @@ const SideBar = ({ className }: SideBarProps) => {
                             <Avatar className="h-6 w-6">
                                 <AvatarFallback>M</AvatarFallback>
                             </Avatar>
-                            <span className="truncate">muhdhakimXXXXXX</span>
+                            <span className="truncate">{email}</span>
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="start" className="w-56">
@@ -338,7 +341,7 @@ const SideBar = ({ className }: SideBarProps) => {
                             <SheetTitle>Navigation Menu</SheetTitle>
                         </SheetHeader>
                         <div className="flex flex-col h-full">
-                            <SidebarContent />
+                            <SidebarContent email={user?.email || ''} />
                         </div>
                     </SheetContent>
                 </Sheet>
@@ -351,7 +354,7 @@ const SideBar = ({ className }: SideBarProps) => {
                     className
                 )}
             >
-                <SidebarContent />
+                <SidebarContent email={user?.email || ''} />
             </aside>
         </>
     );

@@ -10,14 +10,15 @@ import { GoogleCallbackResponse } from "../entities/model/google-callback-respon
 
 export const customLogin = async (loginDto: LoginDto): Promise<LoginResponseModel> => {
     try {
-        const response = await axiosInstance({ path: GOLANG_SERVER_URL }).post('/auth/login', loginDto);
+        const response = await axiosInstance({ path: GOLANG_SERVER_URL }).post('/auth/admin/login', loginDto);
 
         return response.data.data;
     } catch (error) {
+        console.log("Error Custom Login: " + error);
         if (error instanceof AxiosError) {
             throw new Error(error.response?.data.message || "Failed to login");
         }
-        throw new Error("Failed to login");
+        throw new Error("Failed to login due to: " + error);
     }
 }
 
