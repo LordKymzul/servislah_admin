@@ -8,8 +8,9 @@ import { useQueryServiceBays } from "../../tanstack/service-bay-tanstack";
 import { QueryServiceBayDto } from "../../../data/entities/dto/query-service-bay.dto";
 
 const ServiceBayScreen = () => {
-  const [query] = React.useState<QueryServiceBayDto>({});
-  const { data: serviceBays, isLoading } = useQueryServiceBays(query);
+  const { data: serviceBays, isLoading } = useQueryServiceBays({
+    service_center_id: "4ce54aa3-6dec-4960-bda5-dc6c8813c931"
+  });
 
   return (
     <div className="mx-auto py-4 px-4 w-full">

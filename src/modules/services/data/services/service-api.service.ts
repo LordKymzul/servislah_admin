@@ -1,5 +1,7 @@
+import axios, { AxiosError } from "axios";
 import { QueryServiceDto } from "../entities/dto/query-service.dto";
 import { ServiceModel } from "../entities/model/service-model";
+import { axiosInstance } from "@/src/core/util/config";
 
 let services: ServiceModel[] = [
 
@@ -83,7 +85,17 @@ let services: ServiceModel[] = [
     }
 ]
 
-export const getServices = async (query: QueryServiceDto): Promise<ServiceModel[]> => {
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    return services;
+export const getServices = async (token: string, query: QueryServiceDto): Promise<ServiceModel[]> => {
+
+    try {
+
+        const response = await axiosInstance({ token: token }).get(`/services`, { params: query });
+        console.log('Services Response', response.data);
+        return response.data.data.services;
+    } catch (error) {
+        if (error instanceof AxiosError) {
+            throw new Error(error.response?.data.message);
+        }
+        throw new Error("Failed to fetch services");
+    }
 }

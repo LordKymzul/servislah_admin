@@ -1,5 +1,8 @@
+import { AxiosError } from "axios";
 import { QueryServiceBayDto } from "../entities/dto/query-service-bay.dto";
 import { ServiceBayModel } from "../entities/model/service-bay-model";
+import { axiosInstance } from "@/src/core/util/config";
+import { PYTHON_GATEWAY_URL } from "@/src/core/util/constant";
 
 let serviceBays: ServiceBayModel[] = [
   {
@@ -264,8 +267,17 @@ let serviceBays: ServiceBayModel[] = [
 ];
 
 export const getServiceBays = async (
+  token: string,
   query: QueryServiceBayDto
 ): Promise<ServiceBayModel[]> => {
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-  return serviceBays;
-};
+
+  try {
+    const response = await axiosInstance({ token: token, path: PYTHON_GATEWAY_URL }).get("/service-bays", { params: query });
+    return response.data.data.service_bays;
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      throw new Error(error.response?.data.message || "Failed to get service bays");
+    }
+    throw new Error("Failed to get service bays");
+  }
+}

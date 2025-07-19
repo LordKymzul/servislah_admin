@@ -10,6 +10,7 @@ import { GOOGLE_CLIENT_ID } from "@/src/core/util/constant";
 import { Suspense } from "react";
 
 
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -79,6 +80,7 @@ export default function RootLayout({
               </ProtectedLayout>
             </GoogleOAuthProvider>
             <Toaster />
+
           </TanstackQueryClientProvider>
         </ThemeProvider>
       </body>
