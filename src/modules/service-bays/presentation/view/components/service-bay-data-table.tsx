@@ -138,7 +138,7 @@ const columns: ColumnDef<ServiceBayModel>[] = [
       return (
         <div className="flex items-center gap-2">
           <Badge className={getStatusColor(status)}>
-            {status.replace("_", " ")}
+            {status?.replace("_", " ")}
           </Badge>
           {status === "AVAILABLE" && (
             <AssignAppointmentDialog
@@ -394,9 +394,9 @@ export function ServiceBayDataTable({ data }: ServiceBayDataTableProps) {
                     {header.isPlaceholder
                       ? null
                       : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
                   </TableHead>
                 ))}
               </TableRow>

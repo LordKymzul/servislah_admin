@@ -1,4 +1,4 @@
-import { AxiosError } from "axios";
+import axios, { AxiosError } from "axios";
 import { QueryServiceBayDto } from "../entities/dto/query-service-bay.dto";
 import { ServiceBayModel } from "../entities/model/service-bay-model";
 import { axiosInstance } from "@/src/core/util/config";
@@ -272,7 +272,8 @@ export const getServiceBays = async (
 ): Promise<ServiceBayModel[]> => {
 
   try {
-    const response = await axiosInstance({ token: token, path: PYTHON_GATEWAY_URL }).get("/service-bays", { params: query });
+    const response = await axiosInstance({ token: token }).get(`/service-bays`, { params: query });
+
     return response.data.data.service_bays;
   } catch (error) {
     if (error instanceof AxiosError) {

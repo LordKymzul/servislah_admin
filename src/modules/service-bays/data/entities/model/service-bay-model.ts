@@ -1,14 +1,11 @@
+import { ServiceCenterModel } from "@/src/modules/service-centers/data/entities/model/service-center-model";
+
 export interface ServiceBayModel {
   id?: string;
   name?: string;
   bay_number?: string;
   service_center_id?: string;
-  service_center?: {
-    id?: string;
-    name?: string;
-    email?: string;
-    phone?: string;
-  };
+  service_center?: ServiceCenterModel
   capacity?: number;
   equipment?: string[];
   specializations?: string[];
