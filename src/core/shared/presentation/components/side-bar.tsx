@@ -63,15 +63,7 @@ const navigationItems: NavigationItem[] = [
     { icon: Calendar, label: "Appointments", href: "/appointments" },
     { icon: Wrench, label: "Mechanics", href: "/mechanics" },
     { icon: Car, label: "Vehicles", href: "/vehicles" },
-    {
-        icon: Building2,
-        label: "Service Centers",
-        href: "/service-centers",
-        children: [
-            { icon: Tag, label: "Services", href: "/service-centers/services" },
-            { icon: Package, label: "Service Bay", href: "/service-centers/service-bay" },
-        ]
-    },
+
 ];
 
 // Separate navigation items for settings

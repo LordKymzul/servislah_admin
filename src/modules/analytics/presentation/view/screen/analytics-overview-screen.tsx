@@ -1,55 +1,11 @@
 'use client'
 import DataCard from "@/src/core/shared/presentation/components/data-card"
-import { Building2, MoreHorizontal, Edit, Eye, Plus, Search, SortAsc } from "lucide-react"
+import { Building2, Eye, Pencil } from "lucide-react"
 import { AnalyticsOverviewChart } from "../components/analytics-overview-chart"
-import DefaultCard from "@/src/core/shared/presentation/components/default-card"
-
-
-
-import * as React from "react"
-import { Button } from "@/components/ui/button"
-
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableFooter,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table"
-import {
-    DropdownMenu,
-    DropdownMenuItem,
-    DropdownMenuContent,
-    DropdownMenuTrigger
-} from "@/components/ui/dropdown-menu"
+import DefaultTable from "@/src/core/shared/presentation/components/default-table"
 import { Badge } from "@/components/ui/badge"
-
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
-import { useQueryServiceCenters } from "@/src/modules/service-centers/presentation/tanstack/service-center-tanstack"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useState } from "react"
-import { toast } from "sonner"
-
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Input } from "@/components/ui/input"
-
-import {
-    Menubar,
-    MenubarContent,
-    MenubarItem,
-    MenubarMenu,
-    MenubarSeparator,
-    MenubarShortcut,
-    MenubarTrigger,
-} from "@/components/ui/menubar"
-
 
 let recentAppointments: any[] = [
     {
@@ -134,7 +90,6 @@ let recentAppointments: any[] = [
 
 ]
 
-
 const AnalyticsOverviewScreen = () => {
     return (
         <div className="flex flex-col gap-4 w-full p-6">
@@ -191,155 +146,134 @@ const AnalyticsOverviewScreen = () => {
                 <TabsContent value="vehicles">
                     <div className="flex flex-col gap-4 mt-2">
                         <RecentAppointmentsTable />
-
                     </div>
-
-
                 </TabsContent>
 
                 <TabsContent value="revenue">
                     <div className="flex flex-col gap-4 mt-2">
                         <RecentAppointmentsTable />
-
                     </div>
                 </TabsContent>
-
-
             </Tabs>
-
-
-
-        </div >
+        </div>
     )
 }
 
 const RecentAppointmentsTable = () => {
+    const [currentPage, setCurrentPage] = useState(1)
+    const [searchTerm, setSearchTerm] = useState("")
+    const itemsPerPage = 10
+
+    const columns = [
+        {
+            header: "Date",
+            accessorKey: "date",
+        },
+        {
+            header: "Total Appointments",
+            accessorKey: "total_appointments",
+        },
+        {
+            header: "Total Vehicles",
+            accessorKey: "total_vehicles",
+        },
+        {
+            header: "Revenue",
+            accessorKey: "revenue",
+            cell: (row: any) => (
+                <span className="font-medium">
+                    ${row.revenue.toLocaleString()}
+                </span>
+            ),
+        },
+    ]
+
+    const filters = [
+        {
+            label: "Date",
+            value: "date",
+        },
+        {
+            label: "Service Center",
+            value: "service_center",
+        },
+        {
+            label: "Vehicle",
+            value: "vehicle",
+        },
+        {
+            label: "Revenue",
+            value: "revenue",
+        },
+    ]
+
+    const handleSearch = (term: string) => {
+        setSearchTerm(term)
+        // Implement your search logic here
+    }
+
+    const handleFilterChange = (filters: Record<string, string>) => {
+        // Implement your filter logic here
+        console.log("Filters changed:", filters)
+    }
+
+    const handleSort = (column: string, direction: 'asc' | 'desc') => {
+        // Implement your sorting logic here
+        console.log("Sort:", column, direction)
+    }
+
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page)
+        // Implement your pagination logic here
+    }
+
     return (
-        <DefaultCard>
-            <div className="flex flex-col h-full">
-                <div className="flex flex-col  p-6">
-                    <h2 className="text-lg font-bold">Recent Appointments</h2>
-                    <p className="text-sm text-muted-foreground">
-                        This is your overview of the system.
-                    </p>
-                </div>
-
-
-                <div className="flex flex-row items-center w-full justify-between px-6 border-y py-3 gap-2">
-                    <div className="flex flex-row items-center gap-2">
-
-                        {/* <div className="flex flex-row items-center gap-2">
-                            {
-                                Array.from({ length: 3 }).map((_, index) => (
-                                    <Badge key={index} variant="outline">
-                                        Filter {index + 1}
-                                    </Badge>
-                                ))
-                            }
-                        </div> */}
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                            <Menubar>
-                                <MenubarMenu>
-                                    <MenubarTrigger >
-                                        <Plus className="w-4 h-4" />
-                                        Add Filter
-                                    </MenubarTrigger>
-                                    <MenubarContent>
-                                        <MenubarItem>
-                                            Date
-                                        </MenubarItem>
-                                        <MenubarItem>
-                                            Service Center
-                                        </MenubarItem>
-                                        <MenubarItem>
-                                            Vehicle
-                                        </MenubarItem>
-                                        <MenubarItem>
-                                            Revenue
-                                        </MenubarItem>
-                                    </MenubarContent>
-
-
-                                </MenubarMenu>
-                            </Menubar>
-                            <Button variant="outline">
-                                Clear Filters
-                            </Button>
+        <DefaultTable
+            title="Recent Appointments"
+            description="Overview of recent appointments in the system"
+            data={recentAppointments}
+            columns={columns}
+            filters={filters}
+            enableFiltering={true}
+            enableSearch={true}
+            enableSorting={true}
+            searchPlaceholder="Search appointments..."
+            onSearch={handleSearch}
+            onFilterChange={handleFilterChange}
+            onSort={handleSort}
+            enablePagination={true}
+            totalItems={recentAppointments.length}
+            itemsPerPage={itemsPerPage}
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+            rowActions={[
+                {
+                    label: (
+                        <div className="flex items-center gap-2">
+                            <Eye className="h-4 w-4" />
+                            <span>View Details</span>
                         </div>
-
-
-                    </div>
-
-                    <div className="flex flex-row items-center gap-2">
-                        <Input placeholder="Search" />
-                        <Button variant="outline" size="icon">
-                            <SortAsc className="w-4 h-4" />
-
-                        </Button>
-                    </div>
-
-
-                </div>
-
-
-
-                <div className="flex-1 overflow-auto">
-                    <Table>
-                        <TableHeader className="bg-foreground/2" >
-                            <TableRow >
-                                <TableHead className="px-6">Name</TableHead>
-                                <TableHead className=" py-3">Total Appointments</TableHead>
-                                <TableHead className="py-3">Total Vehicles</TableHead>
-                                <TableHead className=" py-3">Revenue</TableHead>
-                                <TableHead className="w-12"></TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody >
-                            {
-                                recentAppointments.slice(0, 9).map((appointment: any, index: number) => (
-                                    <TableRow key={index}>
-                                        <TableCell className="px-6 py-3">{appointment.date}</TableCell>
-                                        <TableCell className="py-3">{appointment.total_appointments}</TableCell>
-                                        <TableCell className="py-3">{appointment.total_vehicles}</TableCell>
-                                        <TableCell className="py-3">{appointment.revenue}</TableCell>
-                                    </TableRow>
-                                ))
-                            }
-                        </TableBody>
-
-                        <TableFooter>
-                            <TableRow className="border-t bg-foreground/2">
-                                <TableCell colSpan={5} className="px-6 py-4">
-                                    <div className="flex items-center justify-between">
-                                        <div className="text-sm text-gray-600">
-                                            1 — 20 of 31 results
-                                        </div>
-                                        <div className="flex items-center gap-4">
-                                            <div className="text-sm text-gray-600">
-                                                1 of 2 pages
-                                            </div>
-                                            <div className="flex items-center gap-2">
-                                                <Button variant="outline" className="text-sm px-3 py-1.5">
-                                                    Prev
-                                                </Button>
-                                                <Button variant="outline" className="text-sm px-3 py-1.5">
-                                                    Next
-                                                </Button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </TableCell>
-                            </TableRow>
-                        </TableFooter>
-
-                    </Table>
-                </div>
-            </div>
-        </DefaultCard>
+                    ),
+                    onClick: (row) => {
+                        console.log("View details:", row)
+                        // Implement your view action here
+                    }
+                },
+                {
+                    label: (
+                        <div className="flex items-center gap-2">
+                            <Pencil className="h-4 w-4" />
+                            <span>Edit</span>
+                        </div>
+                    ),
+                    onClick: (row) => {
+                        console.log("Edit:", row)
+                        // Implement your edit action here
+                    }
+                }
+            ]}
+        />
     )
 }
-
-
 
 export default AnalyticsOverviewScreen

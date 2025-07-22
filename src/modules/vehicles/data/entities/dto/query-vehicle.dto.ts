@@ -1,11 +1,12 @@
 export interface QueryVehicleDto {
-  search?: string;
-  status?: "ACTIVE" | "INACTIVE" | "MAINTENANCE";
-  make?: string;
-  model?: string;
-  year?: number;
+  user_id?: string;
   fuel_type?: string;
-  transmission?: string;
+  year?: number;
+  model?: string;
+  color?: string;
+  license_plate?: string;
   page?: number;
   limit?: number;
 }
+
+

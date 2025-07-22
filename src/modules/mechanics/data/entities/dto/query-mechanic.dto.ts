@@ -3,5 +3,8 @@ export interface QueryMechanicDto {
     is_active?: boolean;
     experience_level?: string;
     years_of_exp?: number;
+    page?: number;
+    limit?: number;
+
 }
 

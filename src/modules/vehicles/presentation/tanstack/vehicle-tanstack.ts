@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getVehicleById, getVehicles } from "../../data/services/vehicle-api.service";
 import { QueryVehicleDto } from "../../data/entities/dto/query-vehicle.dto";
 import { useAuthTanstack } from "@/src/modules/auth/presentation/tanstack/auth-tanstack";
+import { toast } from "sonner";
 
 export const useQueryVehicles = (query: QueryVehicleDto) => {
   const { user } = useAuthTanstack();
@@ -11,12 +12,15 @@ export const useQueryVehicles = (query: QueryVehicleDto) => {
       if (!user) {
         throw new Error("User not found");
       }
-      return getVehicles(query, user.backend_tokens.access_token);
+      console.log("query", query);
+      const response = await getVehicles(query, user.backend_tokens.access_token);
+      toast.success("Vehicles fetched successfully");
+      return response;
     },
     enabled: !!user,
+    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 };
-
 
 export const useQueryVehicleById = (id: string) => {
   const { user } = useAuthTanstack();
@@ -26,8 +30,10 @@ export const useQueryVehicleById = (id: string) => {
       if (!user) {
         throw new Error("User not found");
       }
-      return getVehicleById(id, user.backend_tokens.access_token);
+      const response = await getVehicleById(id, user.backend_tokens.access_token);
+      return response;
     },
-    enabled: !!user,
+    enabled: !!user && !!id,
+    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 };
