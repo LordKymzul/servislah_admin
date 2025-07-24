@@ -3,6 +3,7 @@ import { MechanicModel } from "@/src/modules/mechanics/data/entities/model/mecha
 import { UsersModel } from "@/src/modules/users/data/entities/model/users-model";
 import { VehicleModel } from "@/src/modules/vehicles/data/entities/model/vehicle-model";
 import { ServiceCenterModel, ServiceCenterService } from "@/src/modules/service-centers/data/entities/model/service-center-model";
+import { ServiceModel } from "@/src/modules/services/data/entities/model/service-model";
 
 export class AppointmentModel {
     id?: string;
@@ -28,10 +29,10 @@ export class AppointmentModel {
 
 export interface AppointmentItemModel {
     id?: string;
-    appointment_id?: string;
-    appointment?: AppointmentModel;
+    service_appointment_id?: string;
+    service_appointment?: AppointmentModel;
     service_id?: string;
-    service?: ServiceCenterService;
+    service?: ServiceModel;
     created_at?: Date;
     updated_at?: Date;
 }

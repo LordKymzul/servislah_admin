@@ -1,3 +1,4 @@
+import { AppointmentItemModel } from "@/src/modules/appointments/data/entities/model/appointment-model";
 import { ServiceCenterModel } from "@/src/modules/service-centers/data/entities/model/service-center-model";
 
 export interface ServiceModel {
@@ -9,7 +10,7 @@ export interface ServiceModel {
     is_active?: boolean;
     service_center_id?: string;
     service_center?: ServiceCenterModel;
-    appoinment_items?: any;
+    appoinment_items?: AppointmentItemModel[];
     created_at?: string;
     updated_at?: string;
 }

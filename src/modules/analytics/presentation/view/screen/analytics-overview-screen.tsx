@@ -132,9 +132,9 @@ const AnalyticsOverviewScreen = () => {
 
             <Tabs defaultValue="appointments" className="w-full">
                 <TabsList>
-                    <TabsTrigger value="appointments">Appointments</TabsTrigger>
+                    <TabsTrigger value="appointments">Mechanics</TabsTrigger>
                     <TabsTrigger value="vehicles">Vehicles</TabsTrigger>
-                    <TabsTrigger value="revenue">Revenue</TabsTrigger>
+                    <TabsTrigger value="revenue">Service Centers</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="appointments">

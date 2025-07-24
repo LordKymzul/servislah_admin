@@ -36,6 +36,7 @@ import {
 import { useQueryServiceCenters } from "@/src/modules/service-centers/presentation/tanstack/service-center-tanstack"
 import { useState } from "react"
 import { toast } from "sonner"
+import { useRouter } from "next/navigation"
 
 
 const ServicesScreen = () => {
@@ -48,6 +49,8 @@ const ServicesScreen = () => {
     } = useQueryServiceCenters({
 
     })
+
+    const router = useRouter()
 
     const selectedServiceCenter = serviceCenters?.[0]
 
@@ -146,7 +149,7 @@ const ServicesScreen = () => {
                                                     <Edit className="h-4 w-4" />
                                                     Edit
                                                 </DropdownMenuItem>
-                                                <DropdownMenuItem onClick={() => toast.success(`View service: ${service.id}`)}>
+                                                <DropdownMenuItem onClick={() => router.push(`/settings/service-center/services/${service.id}`)}>
                                                     <Eye className="h-4 w-4" />
                                                     View
                                                 </DropdownMenuItem>
