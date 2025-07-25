@@ -78,43 +78,50 @@ const VehicleDetailScreen = ({ vehicleId }: { vehicleId: string }) => {
                             <div className="p-6 border-b ">
                                 <h3 className="text-lg font-medium">Vehicle Information</h3>
                             </div>
-                            <div className="p-6 space-y-6">
-                                {/* Basic Info Grid */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div>
-                                        <label className="block text-sm font-medium mb-1">Model</label>
-                                        <p className="text-sm">{vehicle.model}</p>
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium mb-1">Year</label>
-                                        <p className="text-sm">{vehicle.year}</p>
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium mb-1">License Plate</label>
-                                        <div className="flex items-center space-x-2">
-                                            <span className="text-sm font-mono">{vehicle.license_plate}</span>
-                                            <button
-                                                onClick={() => copyToClipboard(vehicle.license_plate || 'N/A')}
-                                                className="text-gray-400 hover:text-gray-600"
-                                            >
-                                                <Copy className="h-4 w-4" />
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium mb-1">Fuel Type</label>
-                                        <p className="text-sm">{vehicle.fuel_type}</p>
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium mb-1">Color</label>
-                                        <p className="text-sm">{vehicle.color || 'N/A'}</p>
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium mb-1">Created</label>
-                                        <p className="text-sm">{formatDateTime(vehicle.created_at)}</p>
+
+                            <div className="divide-y">
+                                <div className="flex items-center justify-between p-6">
+                                    <div className="text-sm">Model</div>
+                                    <div className="text-sm">
+                                        <Badge variant="secondary">{vehicle.model || 'N/A'}</Badge>
                                     </div>
                                 </div>
+
+                                <div className="flex items-center justify-between p-6">
+                                    <div className="text-sm">Year</div>
+                                    <div className="text-sm text-right">{vehicle.year || 'N/A'}</div>
+                                </div>
+
+                                <div className="flex items-center justify-between p-6">
+                                    <div className="text-sm">License Plate</div>
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-sm font-medium">{vehicle.license_plate || 'N/A'}</span>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center justify-between p-6">
+                                    <div className="text-sm">Fuel Type</div>
+                                    <div className="text-sm">
+                                        <Badge variant="secondary">{vehicle.fuel_type || 'N/A'}</Badge>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center justify-between p-6">
+                                    <div className="text-sm">Color</div>
+                                    <div className="text-sm">
+                                        <Badge variant="secondary">{vehicle.color || 'N/A'}</Badge>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center justify-between p-6">
+                                    <div className="text-sm">Created</div>
+                                    <div className="text-sm">
+                                        <Badge variant="secondary">{formatDateTime(vehicle.created_at) || 'N/A'}</Badge>
+                                    </div>
+                                </div>
+
                             </div>
+
                         </DefaultCard>
 
                         {/* Media Section */}

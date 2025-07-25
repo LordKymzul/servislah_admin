@@ -34,6 +34,7 @@ import {
 import { useQueryServiceCenters } from "@/src/modules/service-centers/presentation/tanstack/service-center-tanstack"
 import { useState } from "react"
 import { toast } from "sonner"
+import { useRouter } from "next/navigation"
 
 const ServiceBayScreen = () => {
   const {
@@ -45,6 +46,8 @@ const ServiceBayScreen = () => {
 
   const selectedServiceCenter = serviceCenters?.[0]
   const [selectedServiceCenterID, setSelectedServiceCenterID] = useState<string | null>(selectedServiceCenter?.id || null)
+
+  const router = useRouter();
 
   const handleServiceCenterChange = (serviceCenterId: string) => {
     toast.success(`Selected service center: ${serviceCenterId}`)
@@ -109,20 +112,19 @@ const ServiceBayScreen = () => {
               <TableHead>Bay Info</TableHead>
               <TableHead>Specializations</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Current Vehicle</TableHead>
               <TableHead>Performance</TableHead>
               <TableHead className="w-12"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {
-              serviceBays.map((bay) => (
+              serviceBays.service_bays.map((bay) => (
                 <TableRow key={bay.id}>
                   <TableCell>
                     <div className="space-y-1">
-                      <div className="font-medium">{bay.name || `Bay ${bay.bay_number}`}</div>
+                      <div className="font-medium">{bay.name || `Bay ${bay.id}`}</div>
                       <div className="text-sm text-muted-foreground">
-                        Equipment: {bay.equipment?.join(", ") || "None"}
+                        Equipment: {bay.appointments?.map((appointment) => appointment.items?.map((item) => item.service?.name).join(", ") || "None").join(", ") || "None"}
                       </div>
                     </div>
                   </TableCell>
@@ -145,20 +147,7 @@ const ServiceBayScreen = () => {
                       {bay.status || "UNKNOWN"}
                     </Badge>
                   </TableCell>
-                  <TableCell>
-                    {bay.current_vehicle ? (
-                      <div className="space-y-1">
-                        <div className="font-medium">
-                          {bay.current_vehicle.make} {bay.current_vehicle.model}
-                        </div>
-                        <div className="text-sm text-muted-foreground">
-                          {bay.current_vehicle.license_plate} • {bay.current_vehicle.owner_name}
-                        </div>
-                      </div>
-                    ) : (
-                      <span className="text-muted-foreground">No vehicle assigned</span>
-                    )}
-                  </TableCell>
+
                   <TableCell>
                     <div className="space-y-1">
                       <div className="text-sm">
@@ -181,7 +170,7 @@ const ServiceBayScreen = () => {
                           <Edit className="h-4 w-4 mr-2" />
                           Edit
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => toast.success(`View service bay: ${bay.id}`)}>
+                        <DropdownMenuItem onClick={() => router.push(`/settings/service-center/service-bay/${bay.id}`)}>
                           <Eye className="h-4 w-4 mr-2" />
                           View
                         </DropdownMenuItem>
@@ -198,7 +187,7 @@ const ServiceBayScreen = () => {
               <TableCell colSpan={6}>
                 <div className="flex items-center justify-between w-full p-4">
                   <div className="flex-1 text-sm text-muted-foreground">
-                    {serviceBays?.length} of {serviceBays?.length} row(s) selected.
+                    {serviceBays?.metadata?.total} of {serviceBays?.metadata?.total} row(s) selected.
                   </div>
                   <div className="flex items-center space-x-6 lg:space-x-8">
                     <div className="flex items-center space-x-2">

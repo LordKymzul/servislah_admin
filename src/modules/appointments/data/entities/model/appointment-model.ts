@@ -4,16 +4,17 @@ import { UsersModel } from "@/src/modules/users/data/entities/model/users-model"
 import { VehicleModel } from "@/src/modules/vehicles/data/entities/model/vehicle-model";
 import { ServiceCenterModel, ServiceCenterService } from "@/src/modules/service-centers/data/entities/model/service-center-model";
 import { ServiceModel } from "@/src/modules/services/data/entities/model/service-model";
+import { CustomersModel } from "@/src/modules/customers/data/entities/models/customers-model";
 
 export class AppointmentModel {
     id?: string;
     service_center_id?: string;
-    user_id?: string;
+    customer_id?: string;
     vehicle_id?: string;
     mechanic_id?: string;
     service_bay_id?: string;
     service_center?: ServiceCenterModel;
-    user?: UsersModel;
+    customer?: CustomersModel;
     vehicle?: VehicleModel;
     mechanic?: MechanicModel;
     service_bay?: ServiceBayModel;

@@ -48,6 +48,8 @@ const MechanicDetailScreen = ({ mechanicId }: { mechanicId: string }) => {
             <div className="flex-1 space-y-6">
                 {/* Header */}
                 <DefaultCard>
+
+
                     <div className="p-6 flex items-center justify-between">
                         <div className="flex flex-col items-start">
                             <div className="flex items-center gap-2">
@@ -70,40 +72,55 @@ const MechanicDetailScreen = ({ mechanicId }: { mechanicId: string }) => {
                     <div className="p-6 border-b">
                         <h3 className="text-lg font-medium">Summary</h3>
                     </div>
-                    <div className="p-6 space-y-6">
-                        <div className="flex items-start gap-4">
-                            <Avatar className="h-16 w-16">
+
+                    <div className="divide-y">
+                        <div className="flex items-center justify-between p-6">
+                            <div className="text-sm">Email</div>
+                            <div className="flex items-center gap-2">
+                                <span className="text-sm font-medium">{mechanic.user?.email}</span>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center justify-between p-6">
+                            <div className="text-sm">Status</div>
+                            <div className="text-sm">
+                                <Badge variant="secondary">{mechanic.is_active ? "Active" : "Inactive"}</Badge>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center justify-between p-6">
+                            <div className="text-sm">Experience Level</div>
+                            <div className="text-sm">
+                                <Badge variant="secondary">{mechanic.experience_level}</Badge>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center justify-between p-6">
+                            <div className="text-sm">Profile</div>
+                            <Avatar className="h-10 w-10">
                                 <AvatarFallback className="text-lg">{mechanic.user?.email?.[0].toUpperCase()}</AvatarFallback>
                             </Avatar>
-                            <div className="flex-1">
-                                <h3 className="font-medium">{mechanic.user?.email?.split('@')[0]}</h3>
-                                <p className="text-sm">{mechanic.service_center?.name}</p>
-                            </div>
-                            <div className="text-right">
-                                <p className="font-medium">{mechanic.years_of_exp} years</p>
-                                <p className="text-sm">Experience</p>
-                            </div>
                         </div>
+                    </div>
 
-                        <Separator />
 
-                        <div className="space-y-2">
-                            <h4 className="font-medium flex items-center gap-2">
-                                <Wrench className="h-4 w-4" />
-                                Specializations
-                            </h4>
-                            <div className="space-y-3">
-                                {mechanic.specializations?.map((spec) => (
-                                    <div key={spec.id} className="flex items-start justify-between p-2 rounded-lg">
-                                        <div>
-                                            <p className="font-medium">{spec.name}</p>
-                                            <p className="text-sm">{spec.description}</p>
-                                        </div>
-                                        <Badge variant="outline">{spec.name}</Badge>
-                                    </div>
-                                ))}
+
+                </DefaultCard>
+
+                <DefaultCard>
+                    <div className="p-6 border-b">
+                        <h3 className="text-lg font-medium">Specializations</h3>
+                    </div>
+
+                    <div className="divide-y">
+                        {mechanic.specializations?.map((spec) => (
+                            <div key={spec.id} className="flex items-center justify-between p-6">
+                                <div className="text-sm">{spec.name}</div>
+                                <div className="text-sm">
+                                    <Badge variant="secondary">{spec.description}</Badge>
+                                </div>
                             </div>
-                        </div>
+                        ))}
                     </div>
                 </DefaultCard>
 
@@ -131,34 +148,35 @@ const MechanicDetailScreen = ({ mechanicId }: { mechanicId: string }) => {
                         </div>
                     </div>
                 </DefaultCard>
-            </div>
+            </div >
 
             {/* Side Panel */}
-            <div className="w-full md:w-[400px] space-y-6">
+            < div className="w-full md:w-[400px] space-y-6" >
                 <DefaultCard>
                     <div className="p-6 border-b">
                         <h3 className="text-lg font-medium">Contact Information</h3>
                     </div>
-                    <div className="p-6 space-y-4">
-                        <div className="space-y-2">
-                            <div className="flex items-center justify-between">
-                                <span className="text-sm">Email</span>
-                                <div className="flex items-center gap-2">
-                                    <span className="text-sm font-medium">{mechanic.user?.email}</span>
-                                    <Button variant="ghost" size="icon" className="h-6 w-6">
-                                        <Copy className="h-4 w-4" />
-                                    </Button>
-                                </div>
-                            </div>
-                            <Separator />
-                            <div className="flex items-center justify-between">
-                                <span className="text-sm">Status</span>
-                                <Badge variant={mechanic.is_active ? "outline" : "destructive"}>
-                                    {mechanic.is_active ? "Active" : "Inactive"}
-                                </Badge>
+
+                    <div className="divide-y">
+                        <div className="flex items-center justify-between p-6">
+                            <div className="text-sm">Email</div>
+                            <div className="flex items-center gap-2">
+                                <span className="text-sm font-medium">{mechanic.user?.email}</span>
+                                <Button variant="ghost" size="icon" className="h-6 w-6">
+                                    <Copy className="h-4 w-4" />
+                                </Button>
                             </div>
                         </div>
+
+                        <div className="flex items-center justify-between p-6">
+                            <div className="text-sm">Status</div>
+                            <div className="text-sm">
+                                <Badge variant="secondary">{mechanic.is_active ? "Active" : "Inactive"}</Badge>
+                            </div>
+                        </div>
+
                     </div>
+
                 </DefaultCard>
 
                 <DefaultCard>
@@ -186,8 +204,8 @@ const MechanicDetailScreen = ({ mechanicId }: { mechanicId: string }) => {
                         </div>
                     </div>
                 </DefaultCard>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 }
 

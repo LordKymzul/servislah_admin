@@ -126,7 +126,7 @@ const ServicesScreen = () => {
                     </TableHeader>
                     <TableBody>
                         {
-                            services.map((service) => (
+                            services?.services.map((service) => (
                                 <TableRow key={service.id}>
                                     <TableCell>{service.name}</TableCell>
                                     <TableCell>{service.description}</TableCell>
@@ -169,7 +169,7 @@ const ServicesScreen = () => {
                             <TableCell colSpan={5}>
                                 <div className="flex items-center justify-between w-full p-4">
                                     <div className="flex-1 text-sm text-muted-foreground">
-                                        {services?.length} of {services?.length} row(s) selected.
+                                        {services?.metadata?.total} of {services?.metadata?.total} row(s) selected.
                                     </div>
                                     <div className="flex items-center space-x-6 lg:space-x-8">
                                         <div className="flex items-center space-x-2">

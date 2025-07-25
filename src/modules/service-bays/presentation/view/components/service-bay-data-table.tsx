@@ -103,7 +103,7 @@ const columns: ColumnDef<ServiceBayModel>[] = [
     ),
     cell: ({ row }) => {
       const name = row.getValue("name") as string;
-      const bayNumber = row.original.bay_number;
+      const bayNumber = row.original.id;
       const serviceCenter = row.original.service_center;
       return (
         <div className="flex items-center gap-3">
@@ -160,31 +160,7 @@ const columns: ColumnDef<ServiceBayModel>[] = [
       );
     },
   },
-  {
-    accessorKey: "current_vehicle",
-    header: "Current Vehicle",
-    cell: ({ row }) => {
-      const vehicle = row.getValue(
-        "current_vehicle"
-      ) as ServiceBayModel["current_vehicle"];
-      if (!vehicle) {
-        return <span className="text-muted-foreground">No vehicle</span>;
-      }
-      return (
-        <div className="flex items-center gap-2">
-          <Car className="h-4 w-4 text-muted-foreground" />
-          <div>
-            <div className="font-medium">
-              {vehicle.make} {vehicle.model}
-            </div>
-            <div className="text-sm text-muted-foreground">
-              {vehicle.license_plate} • {vehicle.owner_name}
-            </div>
-          </div>
-        </div>
-      );
-    },
-  },
+
   {
     accessorKey: "capacity",
     header: ({ column }) => (

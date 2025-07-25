@@ -1,3 +1,4 @@
+import { MetadataModel } from "@/src/core/shared/entities/model/metadata-model";
 import { AppointmentItemModel } from "@/src/modules/appointments/data/entities/model/appointment-model";
 import { ServiceCenterModel } from "@/src/modules/service-centers/data/entities/model/service-center-model";
 
@@ -15,3 +16,9 @@ export interface ServiceModel {
     updated_at?: string;
 }
 
+
+
+export interface ResponseGetAllServicesModel {
+    metadata: MetadataModel;
+    services: ServiceModel[];
+}

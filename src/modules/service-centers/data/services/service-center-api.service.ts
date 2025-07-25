@@ -2,6 +2,7 @@ import { axiosInstance } from "@/src/core/util/config";
 import { ServiceCenterModel } from "../entities/model/service-center-model";
 import { AxiosError } from "axios";
 import { QueryServiceCenterDto } from "../entities/dto/query-service-center.dto";
+import { UpdateServiceCenterDto } from "../entities/dto/update-service-center.dto";
 
 let serviceCenters: ServiceCenterModel[] = [
     {
@@ -70,5 +71,17 @@ export const getServiceCenterById = async (token: string, id: string): Promise<S
             throw new Error(error.response?.data.message || "Failed to get service center");
         }
         throw new Error("Failed to get service center");
+    }
+}
+
+export const updateServiceCenter = async (token: string, id: string, data: UpdateServiceCenterDto): Promise<ServiceCenterModel> => {
+    try {
+        const response = await axiosInstance({ token: token }).patch(`/service-centers/${id}`, data);
+        return response.data.data.service_center;
+    } catch (error) {
+        if (error instanceof AxiosError) {
+            throw new Error(error.response?.data.message || "Failed to update service center");
+        }
+        throw new Error("Failed to update service center");
     }
 }

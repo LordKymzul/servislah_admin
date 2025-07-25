@@ -48,6 +48,8 @@ import { AppointmentModel } from "@/src/modules/appointments/data/entities/model
 import LoadingScreen from "@/src/core/shared/presentation/screens/loading-screen"
 import { InfoScreenType } from "@/src/core/shared/presentation/screens/info-screen"
 import InfoScreen from "@/src/core/shared/presentation/screens/info-screen"
+import EditServiceCenterSheet from "../components/edit-service-center-sheet"
+import EditServiceCenterLocationSheet from "../components/edit-service-center-location-sheet"
 
 const ServiceCenterDetailScreen = ({ service_center_id }: { service_center_id: string }) => {
     const [searchQuery, setSearchQuery] = useState("");
@@ -132,9 +134,7 @@ const ServiceCenterDetailScreen = ({ service_center_id }: { service_center_id: s
                                     <p className="text-xs md:text-sm text-muted-foreground">Manage your service center's details</p>
                                 </div>
 
-                                <Button variant="ghost" size="icon">
-                                    <ArrowUpRight className="w-4 h-4" />
-                                </Button>
+                                <EditServiceCenterSheet service_center={serviceCenterData} />
 
                             </div>
 
@@ -372,6 +372,7 @@ const ServiceCenterDetailScreen = ({ service_center_id }: { service_center_id: s
                         <DefaultCard>
                             <div className="p-6 border-b flex flex-row items-center justify-between">
                                 <h2 className="text-xl font-semibold">Location</h2>
+                                <EditServiceCenterLocationSheet service_center={serviceCenterData} />
                             </div>
                             <div className="divide-y">
 
