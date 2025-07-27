@@ -3,6 +3,7 @@ export interface UsersModel {
     name?: string;
     email: string;
     role?: string;
+    status?: string;
     created_at?: string;
     updated_at?: string;
 }

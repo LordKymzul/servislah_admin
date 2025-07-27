@@ -5,10 +5,11 @@ import DefaultTable from "@/src/core/shared/presentation/components/default-tabl
 import { useQueryVehicles } from "../../tanstack/vehicle-tanstack"
 import { QueryVehicleDto } from "../../../data/entities/dto/query-vehicle.dto"
 import { Badge } from "@/components/ui/badge"
-import { Edit, Eye } from "lucide-react"
+import { Edit, Eye, FileDown } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { VehicleModel } from "../../../data/entities/model/vehicle-model"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
 
 const VehiclesTable = () => {
     const [currentPage, setCurrentPage] = useState(1)
@@ -121,7 +122,7 @@ const VehiclesTable = () => {
             }
         })
 
-        
+
         setQueryParams(newQueryParams)
     }
 
@@ -155,6 +156,17 @@ const VehiclesTable = () => {
             itemsPerPage={itemsPerPage}
             currentPage={currentPage}
             onPageChange={handlePageChange}
+            headerActions={[
+                {
+                    label: <Button variant="outline" size="sm">
+                        <FileDown className="w-4 h-4 mr-1" />
+                        Export
+                    </Button>,
+                    onClick: () => {
+                        console.log("Export")
+                    }
+                }
+            ]}
             rowActions={[
                 {
                     label: (

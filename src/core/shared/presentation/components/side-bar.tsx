@@ -25,6 +25,9 @@ import {
     Wrench,
     ChevronDown,
     ArrowLeft,
+    Users2,
+    ChartArea,
+    GroupIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -60,9 +63,18 @@ interface NavigationItem {
 
 
 const navigationItems: NavigationItem[] = [
+    { icon: ChartArea, label: "Analytics", href: "/dashboard" },
     { icon: Calendar, label: "Appointments", href: "/appointments" },
     { icon: Wrench, label: "Mechanics", href: "/mechanics" },
     { icon: Car, label: "Vehicles", href: "/vehicles" },
+    {
+        icon: Users, label: "Customers", href: "/customers",
+        children: [
+            { icon: GroupIcon, label: "Customer Groups", href: "/customer-groups" },
+        ]
+    },
+
+
 
 ];
 
@@ -123,20 +135,22 @@ const SideBar = ({ className }: SideBarProps) => {
         setIsOpen(false);
     };
 
-    const renderNavigationItem = (item: NavigationItem) => {
+    const renderNavigationItem = (item: NavigationItem, index: number) => {
         const isSelected = pathname === item.href;
         const hasSelectedChild = item.children?.some(child => pathname === child.href);
         const isExpanded = expandedItem === item.label;
 
         return (
-            <li key={item.label}>
+            <li
+                key={index}
+            >
                 <div className="flex flex-col">
                     <div className="flex">
                         <Button
                             variant="ghost"
                             className={cn(
-                                "w-full justify-start gap-2 h-10",
-                                (isSelected || hasSelectedChild) && "bg-muted font-medium"
+                                "w-full justify-start",
+                                (isSelected || (hasSelectedChild && !item.href)) && "bg-muted font-medium"
                             )}
                             onClick={() => handleItemClick(item)}
                         >

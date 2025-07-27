@@ -5,8 +5,9 @@ import DefaultTable from "@/src/core/shared/presentation/components/default-tabl
 import { useQueryMechanics } from "../../tanstack/mechanic-tanstack"
 import { QueryMechanicDto } from "../../../data/entities/dto/query-mechanic.dto"
 import { Badge } from "@/components/ui/badge"
-import { Edit, Eye } from "lucide-react"
+import { Edit, Eye, FileDown, Plus } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { Button } from "@/components/ui/button"
 
 const MechanicsTable = () => {
     const [currentPage, setCurrentPage] = useState(1)
@@ -145,6 +146,26 @@ const MechanicsTable = () => {
             title="Mechanics"
             description="Manage your mechanics and their assignments"
             data={mechanicsData?.mechanics || []}
+            headerActions={[
+                {
+                    label: <Button variant="outline" size="sm">
+                        <FileDown className="w-4 h-4 mr-1" />
+                        Export
+                    </Button>,
+                    onClick: () => {
+                        console.log("Add New")
+                    }
+                },
+                {
+                    label: <Button variant="outline" size="sm">
+                        <Plus className="w-4 h-4 mr-1" />
+                        Add New
+                    </Button>,
+                    onClick: () => {
+                        console.log("Add New")
+                    }
+                }
+            ]}
             columns={columns}
             filters={filters}
             enableFiltering={true}

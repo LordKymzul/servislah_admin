@@ -49,6 +49,10 @@ interface DefaultTableProps {
     // Basic props
     title: string
     description: string
+    headerActions?: {
+        label: React.ReactNode
+        onClick: (row: any) => void
+    }[]
     data: any[]
     columns: Column[]
 
@@ -98,6 +102,7 @@ const DefaultTable = ({
     itemsPerPage = 10,
     currentPage = 1,
     onPageChange,
+    headerActions = [],
     rowActions = []
 }: DefaultTableProps) => {
     const [searchTerm, setSearchTerm] = React.useState("")
@@ -134,11 +139,22 @@ const DefaultTable = ({
     return (
         <DefaultCard>
             <div className="flex flex-col h-full">
-                <div className="flex flex-col p-6">
-                    <h2 className="text-lg font-bold">{title}</h2>
-                    <p className="text-sm text-muted-foreground">
-                        {description}
-                    </p>
+                <div className="flex md:flex-row flex-col md:items-center items-start justify-between p-6 gap-2">
+                    <div className="flex flex-col">
+                        <h2 className="text-lg font-bold">{title}</h2>
+                        <p className="text-sm text-muted-foreground">
+                            {description}
+                        </p>
+                    </div>
+                    {headerActions.length > 0 && (
+                        <div className="flex flex-row items-center gap-2">
+                            {headerActions.map((action, index) => (
+                                <div key={index}>
+                                    {action.label}
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
 
                 {(enableFiltering || enableSearch) && (
@@ -339,7 +355,7 @@ const DefaultTable = ({
                     </Table>
                 </div>
             </div>
-        </DefaultCard>
+        </DefaultCard >
     )
 }
 

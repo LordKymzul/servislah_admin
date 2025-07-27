@@ -10,7 +10,7 @@ const HeadNav = () => {
     const pathSegments = pathname.split('/').filter(segment => segment);
 
     return (
-        <div className="flex items-center justify-between w-full border-b px-4 py-4">
+        <div className="flex items-center justify-between w-full border-b px-4 py-4 text-sm">
             <nav aria-label="Breadcrumb">
                 <ol className="flex items-center space-x-2">
                     <li className="flex items-center">

@@ -29,20 +29,7 @@ const MechanicsScreen = () => {
 
     return (
         <div className="mx-auto py-4 px-4 w-full">
-            <div className="flex md:flex-row flex-col justify-between md:items-center mb-6 gap-4">
-                <div className="space-y-2">
-                    <h1 className="md:text-3xl text-2xl font-bold">Mechanics</h1>
-                    <p className="text-sm text-muted-foreground font-light">
-                        Manage your mechanics and their assignments
-                    </p>
-                </div>
-                <div className="flex gap-2">
-                    <Button>
-                        <Wrench className="mr-2 h-4 w-4" />
-                        Add New Mechanic
-                    </Button>
-                </div>
-            </div>
+
             <MechanicsTable />
         </div>
     )
