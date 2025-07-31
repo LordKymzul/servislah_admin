@@ -20,12 +20,14 @@ import {
     FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { Switch } from "@/components/ui/switch"
 import { useQueryClient } from "@tanstack/react-query"
-import { UsersModel } from "../../../data/entities/model/users-model"
+import { CustomerGroupModel } from "../../../data/entities/model/customer-group-model"
 
 
-interface EditProfileSheetProps {
-    user?: UsersModel;
+interface CustomerGroupEditSheetProps {
+    customerGroup?: CustomerGroupModel;
     open: boolean;
     onOpenChange: (open: boolean) => void;
 }
@@ -34,20 +36,16 @@ const formSchema = z.object({
     name: z.string().min(2, {
         message: "Name must be at least 2 characters.",
     }),
-    email: z.string().email({
-        message: "Invalid email address.",
-    }),
 })
 
 type FormValues = z.infer<typeof formSchema>
 
-const EditProfileSheet = ({ user, open, onOpenChange }: EditProfileSheetProps) => {
+const CustomerGroupEditSheet = ({ customerGroup, open, onOpenChange }: CustomerGroupEditSheetProps) => {
     const queryClient = useQueryClient()
     const form = useForm<FormValues>({
         resolver: zodResolver(formSchema) as any,
         defaultValues: {
-            name: user?.name || "",
-            email: user?.email || "",
+            name: customerGroup?.name || "",
         },
     })
 
@@ -61,9 +59,9 @@ const EditProfileSheet = ({ user, open, onOpenChange }: EditProfileSheetProps) =
         <Sheet open={open} onOpenChange={onOpenChange}>
             <SheetContent className="sm:max-w-[425px] w-full">
                 <SheetHeader>
-                    <SheetTitle>Edit Profile</SheetTitle>
+                    <SheetTitle>Edit Customer Group</SheetTitle>
                     <SheetDescription>
-                        Make changes to your profile here. Click save when you're done.
+                        Make changes to your customer group here. Click save when you're done.
                     </SheetDescription>
                 </SheetHeader>
                 <Form {...form}>
@@ -76,20 +74,6 @@ const EditProfileSheet = ({ user, open, onOpenChange }: EditProfileSheetProps) =
                                     <FormLabel>Name</FormLabel>
                                     <FormControl>
                                         <Input placeholder="Enter your name" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
-                        <FormField
-                            control={form.control}
-                            name="email"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Email</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Enter your email" {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -110,4 +94,4 @@ const EditProfileSheet = ({ user, open, onOpenChange }: EditProfileSheetProps) =
     )
 }
 
-export default EditProfileSheet;
+export default CustomerGroupEditSheet;

@@ -1,5 +1,7 @@
+import { CustomerGroupScreen } from "@/src/modules/customer_groups/presentation/view/screens/customer-group-screen"
+
 const CustomerGroupsPage = () => {
-    return <div>CustomerGroupsPage</div>
+    return <CustomerGroupScreen />
 }
 
 export default CustomerGroupsPage

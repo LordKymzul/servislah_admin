@@ -1,83 +1,74 @@
-"use client"
-import LoadingScreen from "@/src/core/shared/presentation/screens/loading-screen";
-import { useQueryMe, useQueryUserById } from "../../tanstack/user-tanstack"
-import InfoScreen, { InfoScreenType } from "@/src/core/shared/presentation/screens/info-screen";
-import DefaultCard from "@/src/core/shared/presentation/components/default-card";
-import { useState } from "react"
+'use client'
 
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Edit, MoreHorizontal } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import EditProfileSheet from "../components/edit-profile-sheet";
+import { useState } from "react"
+import DefaultCard from "@/src/core/shared/presentation/components/default-card"
+import { Edit, MoreHorizontal, Trash } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { useQueryMe } from "../../tanstack/user-tanstack"
+import EditProfileSheet from "../components/edit-profile-sheet"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 
 const ProfileScreen = () => {
-    const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
-    const {
-        data: user,
-        isLoading,
-        isError,
-        error
-    } = useQueryMe();
-
-    if (isLoading) return <LoadingScreen />
-    if (isError) return <InfoScreen type={InfoScreenType.ERROR} title="Error" description={error.message} />
+    const { data: user } = useQueryMe()
+    const [isEditProfileOpen, setIsEditProfileOpen] = useState(false)
 
     return (
-        <div className="flex flex-col gap-4 w-full">
-            <div className="p-6">
+        <div className="flex flex-col gap-4 items-start w-full p-6">
+            <div className="w-full">
                 <DefaultCard>
-                    <div className="p-6 border-b flex flex-col md:flex-row md:items-center  items-start gap-2 justify-between">
-                        <div className="flex flex-col items-start">
-                            <h2 className="text-xl font-semibold">Profile</h2>
-                            <p className="text-sm text-muted-foreground">
-                                Manage your profile information
-                            </p>
+                    <div className="divide-y">
+                        <div className="flex items-center justify-between p-4">
+                            <h2 className="md:text-lg text-base font-semibold">Profile</h2>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" size="icon">
+                                        <MoreHorizontal className="w-4 h-4" />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent>
+                                    <DropdownMenuItem onClick={() => setIsEditProfileOpen(true)}>
+                                        <Edit className="w-4 h-4 mr-2" />
+                                        Edit
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem>
+                                        <Trash className="w-4 h-4 mr-2" />
+                                        Delete
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
                         </div>
 
-
-
-                        <EditProfileSheet
-                            user={user}
-                            open={isEditProfileOpen}
-                            onOpenChange={setIsEditProfileOpen}
-                            trigger={
-                                <Button variant="ghost" size="icon">
-                                    <MoreHorizontal className="w-4 h-4" />
-                                </Button>
-                            }
-                        />
-                    </div>
-
-                    <div className="divide-y">
-                        <div className="flex items-center justify-between p-6">
+                        <div className="flex items-center justify-between p-4">
                             <div className="text-sm">Name</div>
                             <div className="text-sm text-right">{user?.name || 'N/A'}</div>
                         </div>
 
-                        <div className="flex items-center justify-between p-6">
+                        <div className="flex items-center justify-between p-4">
                             <div className="text-sm">Email</div>
                             <div className="text-sm text-right">{user?.email || 'N/A'}</div>
                         </div>
 
-                        <div className="flex items-center justify-between p-6">
+                        <div className="flex items-center justify-between p-4">
                             <div className="text-sm">Role</div>
                             <div className="text-sm text-right">{user?.role || 'N/A'}</div>
                         </div>
 
-                        <div className="flex items-center justify-between p-6">
+                        <div className="flex items-center justify-between p-4">
                             <div className="text-sm">Status</div>
                             <div className="text-sm text-right">{user?.status || 'N/A'}</div>
                         </div>
                     </div>
                 </DefaultCard>
             </div>
+
+            {/* Edit Sheet */}
+            {isEditProfileOpen && (
+                <EditProfileSheet
+                    user={user}
+                    open={isEditProfileOpen}
+                    onOpenChange={setIsEditProfileOpen}
+                />
+            )}
         </div>
     )
 }
