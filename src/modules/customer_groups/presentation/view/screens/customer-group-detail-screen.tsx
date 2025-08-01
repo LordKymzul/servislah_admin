@@ -13,6 +13,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import CustomerGroupEditSheet from "../components/customer-group-edit-sheet"
 import InfoScreen, { InfoScreenType } from "@/src/core/shared/presentation/screens/info-screen"
 import LoadingScreen from "@/src/core/shared/presentation/screens/loading-screen"
+import CustomerTable from "@/src/modules/customers/presentation/view/components/customer-table"
 
 const CustomerGroupDetailScreen = ({ customerGroupId }: { customerGroupId: string }) => {
     const { data: customerGroup, isLoading, isError, error } = useGetCustomerGroupById(customerGroupId)
@@ -135,38 +136,16 @@ const CustomerGroupDetailScreen = ({ customerGroupId }: { customerGroupId: strin
                 )
             }
 
-            {/* Customers Table */}
-            <div className="w-full">
-                <DefaultTable
-                    title="Customers"
-                    description="Manage customers in this group"
-                    data={customerGroup?.customers || []}
-                    columns={columns}
-                    filters={filters}
-                    enableFiltering={true}
-                    enableSearch={true}
-                    enableSorting={true}
-                    searchPlaceholder="Search customers..."
-                    onSearch={handleSearch}
-                    onFilterChange={handleFilterChange}
-                    enablePagination={true}
-                    totalItems={customerGroup?.customers?.length || 0}
-                    itemsPerPage={itemsPerPage}
-                    currentPage={currentPage}
-                    onPageChange={handlePageChange}
-                    headerActions={[
-                        {
-                            label: <Button>
-                                <Plus className="w-4 h-4 mr-2" />
-                                Add
-                            </Button>,
-                            onClick: () => {
-                                console.log("Add customer")
-                            }
-                        }
-                    ]}
-                />
-            </div>
+            <CustomerTable
+                customers={customerGroup?.customers || []}
+                totalItems={customerGroup?.metadata?.total || 0}
+                currentPage={1}
+                itemsPerPage={10}
+                onSearch={() => { }}
+                onFilterChange={() => { }}
+                onPageChange={() => { }}
+                isLoading={isLoading}
+            />
         </div>
     )
 }

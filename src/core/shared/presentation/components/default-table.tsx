@@ -1,7 +1,7 @@
 'use client'
 
 import DefaultCard from "@/src/core/shared/presentation/components/default-card"
-import { Plus, Search, SortAsc, MoreHorizontal, Check } from "lucide-react"
+import { Plus, Search, SortAsc, MoreHorizontal, Check, Loader2 } from "lucide-react"
 import * as React from "react"
 import { Button } from "@/components/ui/button"
 import {
@@ -82,6 +82,9 @@ interface DefaultTableProps {
         label: React.ReactNode
         onClick: (row: any) => void
     }[]
+
+    // Loading props
+    isLoading?: boolean
 }
 
 const DefaultTable = ({
@@ -103,7 +106,8 @@ const DefaultTable = ({
     currentPage = 1,
     onPageChange,
     headerActions = [],
-    rowActions = []
+    rowActions = [],
+    isLoading = false
 }: DefaultTableProps) => {
     const [searchTerm, setSearchTerm] = React.useState("")
     const [activeFilters, setActiveFilters] = React.useState<Record<string, string>>({})
@@ -259,101 +263,109 @@ const DefaultTable = ({
                 )}
 
                 <div className="flex-1 overflow-auto">
-                    <Table>
-                        <TableHeader className="bg-foreground/2">
-                            <TableRow>
-                                {columns.map((column, index) => (
-                                    <TableHead
-                                        key={column.accessorKey}
-                                        className={index === 0 ? "px-6" : "py-3"}
-                                    >
-                                        {column.header}
-                                    </TableHead>
-                                ))}
-                                {rowActions.length > 0 && (
-                                    <TableHead className="w-12"></TableHead>
-                                )}
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {data.map((row, rowIndex) => (
-                                <TableRow key={rowIndex}>
-                                    {columns.map((column, colIndex) => (
-                                        <TableCell
-                                            key={`${rowIndex}-${column.accessorKey}`}
-                                            className={colIndex === 0 ? "px-6 py-3" : "py-3"}
+                    {isLoading ? (
+                        <div className="flex flex-col items-center justify-center h-full p-6">
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-foreground"></div>
+                        </div>
+                    ) : (
+                        <Table>
+                            <TableHeader className="bg-foreground/2">
+                                <TableRow>
+                                    {columns.map((column, index) => (
+                                        <TableHead
+                                            key={column.accessorKey}
+                                            className={index === 0 ? "px-6" : "py-3"}
                                         >
-                                            {column.cell
-                                                ? column.cell(row)
-                                                : row[column.accessorKey]}
-                                        </TableCell>
+                                            {column.header}
+                                        </TableHead>
                                     ))}
                                     {rowActions.length > 0 && (
-                                        <TableCell className="py-3">
-                                            <DropdownMenu>
-                                                <DropdownMenuTrigger asChild>
-                                                    <Button
-                                                        variant="ghost"
-                                                        className="h-8 w-8 p-0"
-                                                    >
-                                                        <MoreHorizontal className="h-4 w-4" />
-                                                    </Button>
-                                                </DropdownMenuTrigger>
-                                                <DropdownMenuContent align="end">
-                                                    {rowActions.map((action, actionIndex) => (
-                                                        <DropdownMenuItem
-                                                            key={actionIndex}
-                                                            onClick={() => action.onClick(row)}
-                                                        >
-                                                            {action.label}
-                                                        </DropdownMenuItem>
-                                                    ))}
-                                                </DropdownMenuContent>
-                                            </DropdownMenu>
-                                        </TableCell>
+                                        <TableHead className="w-12"></TableHead>
                                     )}
                                 </TableRow>
-                            ))}
-                        </TableBody>
+                            </TableHeader>
+                            <TableBody>
+                                {data.map((row, rowIndex) => (
+                                    <TableRow key={rowIndex}>
+                                        {columns.map((column, colIndex) => (
+                                            <TableCell
+                                                key={`${rowIndex}-${column.accessorKey}`}
+                                                className={colIndex === 0 ? "px-6 py-3" : "py-3"}
+                                            >
+                                                {column.cell
+                                                    ? column.cell(row)
+                                                    : row[column.accessorKey]}
+                                            </TableCell>
+                                        ))}
+                                        {rowActions.length > 0 && (
+                                            <TableCell className="py-3">
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger asChild>
+                                                        <Button
+                                                            variant="ghost"
+                                                            className="h-8 w-8 p-0"
+                                                        >
+                                                            <MoreHorizontal className="h-4 w-4" />
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent align="end">
+                                                        {rowActions.map((action, actionIndex) => (
+                                                            <DropdownMenuItem
+                                                                key={actionIndex}
+                                                                onClick={() => action.onClick(row)}
+                                                            >
+                                                                {action.label}
+                                                            </DropdownMenuItem>
+                                                        ))}
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
+                                            </TableCell>
+                                        )}
+                                    </TableRow>
+                                ))}
+                            </TableBody>
 
-                        {enablePagination && (
-                            <TableFooter>
-                                <TableRow className="border-t bg-foreground/2">
-                                    <TableCell colSpan={columns.length + (rowActions.length > 0 ? 1 : 0)} className="px-6 py-4">
-                                        <div className="flex items-center justify-between">
-                                            <div className="text-sm text-gray-600">
-                                                {`${(currentPage - 1) * itemsPerPage + 1} — ${Math.min(currentPage * itemsPerPage, totalItems)} of ${totalItems} results`}
-                                            </div>
-                                            <div className="flex items-center gap-4">
+                            {enablePagination && (
+                                <TableFooter>
+                                    <TableRow className="border-t bg-foreground/2">
+                                        <TableCell colSpan={columns.length + (rowActions.length > 0 ? 1 : 0)} className="px-6 py-4">
+                                            <div className="flex items-center justify-between">
                                                 <div className="text-sm text-gray-600">
-                                                    {`${currentPage} of ${totalPages} pages`}
+                                                    {`${(currentPage - 1) * itemsPerPage + 1} — ${Math.min(currentPage * itemsPerPage, totalItems)} of ${totalItems} results`}
                                                 </div>
-                                                <div className="flex items-center gap-2">
-                                                    <Button
-                                                        variant="outline"
-                                                        className="text-sm px-3 py-1.5"
-                                                        onClick={() => onPageChange?.(currentPage - 1)}
-                                                        disabled={currentPage <= 1}
-                                                    >
-                                                        Prev
-                                                    </Button>
-                                                    <Button
-                                                        variant="outline"
-                                                        className="text-sm px-3 py-1.5"
-                                                        onClick={() => onPageChange?.(currentPage + 1)}
-                                                        disabled={currentPage >= totalPages}
-                                                    >
-                                                        Next
-                                                    </Button>
+                                                <div className="flex items-center gap-4">
+                                                    <div className="text-sm text-gray-600">
+                                                        {`${currentPage} of ${totalPages} pages`}
+                                                    </div>
+                                                    <div className="flex items-center gap-2">
+                                                        <Button
+                                                            variant="outline"
+                                                            className="text-sm px-3 py-1.5"
+                                                            onClick={() => onPageChange?.(currentPage - 1)}
+                                                            disabled={currentPage <= 1}
+                                                        >
+                                                            Prev
+                                                        </Button>
+                                                        <Button
+                                                            variant="outline"
+                                                            className="text-sm px-3 py-1.5"
+                                                            onClick={() => onPageChange?.(currentPage + 1)}
+                                                            disabled={currentPage >= totalPages}
+                                                        >
+                                                            Next
+                                                        </Button>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </TableCell>
-                                </TableRow>
-                            </TableFooter>
-                        )}
-                    </Table>
+                                        </TableCell>
+                                    </TableRow>
+                                </TableFooter>
+                            )}
+                        </Table>
+                    )}
+
                 </div>
+
             </div>
         </DefaultCard >
     )

@@ -1,26 +1,34 @@
 'use client'
 
-import { useState } from "react"
 import DefaultTable from "@/src/core/shared/presentation/components/default-table"
-import { useGetCustomerGroups } from "../../tanstack/customer-group-tanstack"
-import { QueryCustomerGroupDto } from "../../../data/entities/dto/query-customer-group.dto"
 import { Badge } from "@/components/ui/badge"
 import { Edit, Eye, FileDown, Plus } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { CustomerGroupModel } from "../../../data/entities/model/customer-group-model"
 import { Button } from "@/components/ui/button"
 
-const CustomerGroupTable = () => {
-    const [currentPage, setCurrentPage] = useState(1)
-    const [searchTerm, setSearchTerm] = useState("")
-    const itemsPerPage = 10
+interface CustomerGroupTableProps {
+    customerGroups: CustomerGroupModel[]
+    totalItems: number
+    currentPage: number
+    itemsPerPage: number
+    onSearch: (term: string) => void
+    onFilterChange: (filters: Record<string, string>) => void
+    onPageChange: (page: number) => void
+    isLoading: boolean
+}
 
-    const [queryParams, setQueryParams] = useState<QueryCustomerGroupDto>({
-        page: currentPage,
-        limit: itemsPerPage
-    })
+const CustomerGroupTable = ({
+    customerGroups,
+    totalItems,
+    currentPage,
+    itemsPerPage,
+    onSearch,
+    onFilterChange,
+    onPageChange,
+    isLoading
+}: CustomerGroupTableProps) => {
 
-    const { data: customerGroupsData, isLoading } = useGetCustomerGroups(queryParams)
     const router = useRouter()
 
     const columns = [
@@ -78,61 +86,29 @@ const CustomerGroupTable = () => {
         }
     ]
 
-    const handleSearch = (term: string) => {
-        setSearchTerm(term)
-        setQueryParams(prev => ({
-            ...prev,
-            search: term
-        }))
-    }
-
-    const handleFilterChange = (filters: Record<string, string>) => {
-        const newQueryParams: QueryCustomerGroupDto = {
-            page: currentPage,
-            limit: itemsPerPage
-        }
-
-        Object.entries(filters).forEach(([key, value]) => {
-            if (key === 'is_active') {
-                newQueryParams.is_active = value === 'true'
-            }
-        })
-
-        setQueryParams(newQueryParams)
-    }
-
-    const handlePageChange = (page: number) => {
-        setCurrentPage(page)
-        setQueryParams(prev => ({
-            ...prev,
-            page
-        }))
-    }
-
     const handleViewCustomerGroup = (customerGroupId: string) => {
         router.push(`/customer-groups/${customerGroupId}`)
     }
-
-
 
     return (
         <DefaultTable
             title="Customer Groups"
             description="Manage customer groups in the system"
-            data={customerGroupsData?.customer_groups || []}
+            data={customerGroups}
             columns={columns}
             filters={filters}
             enableFiltering={true}
             enableSearch={true}
             enableSorting={true}
             searchPlaceholder="Search customer groups..."
-            onSearch={handleSearch}
-            onFilterChange={handleFilterChange}
+            onSearch={onSearch}
+            onFilterChange={onFilterChange}
             enablePagination={true}
-            totalItems={customerGroupsData?.metadata?.total || 0}
+            totalItems={totalItems}
             itemsPerPage={itemsPerPage}
             currentPage={currentPage}
-            onPageChange={handlePageChange}
+            onPageChange={onPageChange}
+            isLoading={isLoading}
             headerActions={[
                 {
                     label: <Button variant="outline" size="sm">

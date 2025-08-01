@@ -5,6 +5,14 @@ import { VehicleModel } from "@/src/modules/vehicles/data/entities/model/vehicle
 import { ServiceCenterModel, ServiceCenterService } from "@/src/modules/service-centers/data/entities/model/service-center-model";
 import { ServiceModel } from "@/src/modules/services/data/entities/model/service-model";
 import { CustomersModel } from "@/src/modules/customers/data/entities/models/customers-model";
+import { MetadataModel } from "@/src/core/shared/entities/model/metadata-model";
+
+export interface AppointmentResponseModel {
+    appointments: AppointmentModel[];
+    metadata: MetadataModel;
+}
+
+
 
 export class AppointmentModel {
     id?: string;
@@ -25,6 +33,7 @@ export class AppointmentModel {
     created_at?: Date;
     updated_at?: Date;
 }
+
 
 
 

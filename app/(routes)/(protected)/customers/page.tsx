@@ -1,5 +1,7 @@
+import { CustomerScreen } from "@/src/modules/customers/presentation/view/screens/customer-screen"
+
 const CustomersPage = () => {
-    return <div>CustomersPage</div>
+    return <CustomerScreen />
 }
 
 export default CustomersPage
