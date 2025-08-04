@@ -2,16 +2,20 @@
 
 import { useState } from "react"
 import DefaultTable from "@/src/core/shared/presentation/components/default-table"
-import { useQueryMechanics } from "../../tanstack/mechanic-tanstack"
+import { useDeleteMechanic, useQueryMechanics } from "../../tanstack/mechanic-tanstack"
 import { QueryMechanicDto } from "../../../data/entities/dto/query-mechanic.dto"
 import { Badge } from "@/components/ui/badge"
-import { Edit, Eye, FileDown, Plus } from "lucide-react"
+import { Edit, Eye, FileDown, Plus, Trash } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
+import CreateMechanicDialog from "./create-mechanic-dialog"
+import DefaultAlertDialog from "@/src/core/shared/presentation/components/default-alert-dialog"
 
 const MechanicsTable = () => {
     const [currentPage, setCurrentPage] = useState(1)
     const [searchTerm, setSearchTerm] = useState("")
+    const [selectedMechanic, setSelectedMechanic] = useState<any>(null)
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
     const itemsPerPage = 10
 
     const [queryParams, setQueryParams] = useState<QueryMechanicDto>({
@@ -20,7 +24,10 @@ const MechanicsTable = () => {
     })
 
     const { data: mechanicsData, isLoading } = useQueryMechanics(queryParams)
+    const { mutate: deleteMechanic, isPending } = useDeleteMechanic()
     const router = useRouter()
+
+    const [open, setOpen] = useState(false)
 
     const columns = [
         {
@@ -141,70 +148,107 @@ const MechanicsTable = () => {
         router.push(`/mechanics/${mechanicId}`)
     }
 
+    const handleDeleteMechanic = (mechanic: any) => {
+        setSelectedMechanic(mechanic)
+        setIsDeleteDialogOpen(true)
+    }
+
+    const handleConfirmDelete = () => {
+        if (selectedMechanic) {
+            deleteMechanic(selectedMechanic.id, {
+                onSettled: () => {
+
+                    setIsDeleteDialogOpen(false)
+                    setSelectedMechanic(null)
+                }
+            })
+        }
+
+
+    }
+
     return (
-        <DefaultTable
-            title="Mechanics"
-            description="Manage your mechanics and their assignments"
-            data={mechanicsData?.mechanics || []}
-            headerActions={[
-                {
-                    label: <Button variant="outline" size="sm">
-                        <FileDown className="w-4 h-4 mr-1" />
-                        Export
-                    </Button>,
-                    onClick: () => {
-                        console.log("Add New")
+        <>
+            <DefaultTable
+                title="Mechanics"
+                description="Manage your mechanics and their assignments"
+                data={mechanicsData?.mechanics || []}
+                headerActions={[
+                    {
+                        label: <Button
+                            onClick={() => setOpen(true)}
+                            variant="outline" size="sm">
+                            <FileDown className="w-4 h-4 mr-1" />
+                            Export
+                        </Button>,
+                        onClick: () => {
+                            console.log("Add New")
+                        }
+                    },
+                    {
+                        label: <Button
+                            onClick={() => setOpen(true)}
+                            variant="outline" size="sm">
+                            <Plus className="w-4 h-4 mr-1" />
+                            Add New
+                        </Button>,
+                        onClick: () => {
+                            console.log("Add New")
+                        }
                     }
-                },
-                {
-                    label: <Button variant="outline" size="sm">
-                        <Plus className="w-4 h-4 mr-1" />
-                        Add New
-                    </Button>,
-                    onClick: () => {
-                        console.log("Add New")
+                ]}
+                columns={columns}
+                filters={filters}
+                enableFiltering={true}
+                enableSearch={true}
+                enableSorting={true}
+                searchPlaceholder="Search mechanics..."
+                onSearch={handleSearch}
+                onFilterChange={handleFilterChange}
+                enablePagination={true}
+                totalItems={mechanicsData?.metadata?.total || 0}
+                itemsPerPage={itemsPerPage}
+                currentPage={currentPage}
+                onPageChange={handlePageChange}
+                rowActions={[
+
+                    {
+                        label: (
+                            <div className="flex items-center gap-2">
+                                <Eye className="h-4 w-4" />
+                                <span>View Details</span>
+                            </div>
+                        ),
+                        onClick: (row) => {
+                            handleViewMechanic(row.id)
+                        }
+                    },
+                    {
+                        label: (
+                            <div className="flex items-center gap-2">
+                                <Trash className="h-4 w-4" />
+                                <span>Delete</span>
+                            </div>
+                        ),
+                        onClick: (row) => {
+                            handleDeleteMechanic(row)
+                        }
                     }
-                }
-            ]}
-            columns={columns}
-            filters={filters}
-            enableFiltering={true}
-            enableSearch={true}
-            enableSorting={true}
-            searchPlaceholder="Search mechanics..."
-            onSearch={handleSearch}
-            onFilterChange={handleFilterChange}
-            enablePagination={true}
-            totalItems={mechanicsData?.metadata?.total || 0}
-            itemsPerPage={itemsPerPage}
-            currentPage={currentPage}
-            onPageChange={handlePageChange}
-            rowActions={[
-                {
-                    label: (
-                        <div className="flex items-center gap-2">
-                            <Edit className="h-4 w-4" />
-                            <span>Edit</span>
-                        </div>
-                    ),
-                    onClick: (row) => {
-                        console.log("Edit:", row)
-                        // Implement edit action
-                    }
-                },
-                {
-                    label: (
-                        <div className="flex items-center gap-2">
-                            <Eye className="h-4 w-4" />
-                            <span>View Details</span>
-                        </div>
-                    ),
-                    onClick: (row) => {
-                        handleViewMechanic(row.id)
-                    }
-                }
-            ]}
-        />
+                ]}
+            />
+            <CreateMechanicDialog open={open} onOpenChange={setOpen} />
+
+            <DefaultAlertDialog
+                open={isDeleteDialogOpen}
+                onOpenChange={setIsDeleteDialogOpen}
+                title="Delete Mechanic"
+                description={`Are you sure you want to delete ${selectedMechanic?.user?.name || 'this mechanic'}? This action cannot be undone.`}
+                confirmText="Delete"
+                cancelText="Cancel"
+                onConfirm={handleConfirmDelete}
+                loading={isPending}
+            />
+        </>
     )
 }
 

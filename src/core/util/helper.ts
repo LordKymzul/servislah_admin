@@ -50,3 +50,8 @@ export const formatDateTime = (date: Date | string | undefined, options: Intl.Da
         minute: '2-digit'
     });
 }
+
+export const getDayName = (day: number): string => {
+    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+    return days[day - 1] || 'Unknown'
+}

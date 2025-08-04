@@ -3,6 +3,9 @@ import { QueryCustomerGroupDto } from "../entities/dto/query-customer-group.dto"
 import { CustomerGroupModel } from "../entities/model/customer-group-model";
 import { AxiosError } from "axios";
 import { MetadataModel } from "@/src/core/shared/entities/model/metadata-model";
+import { CreateCustomerGroupDto } from "../entities/dto/create-customer-group.dto";
+import path from "path";
+import { UpdateCustomerGroupDto } from "../entities/dto/update-customer-group.dto";
 
 let customerGroups: CustomerGroupModel[] = [
     {
@@ -73,5 +76,44 @@ export const getCustomerGroupById = async (token: string, id: string) => {
             throw new Error(error.response?.data.message)
         }
         throw new Error("Failed to get customer group")
+    }
+}
+
+
+
+export const createCustomerGroup = async (token: string, data: CreateCustomerGroupDto): Promise<CustomerGroupModel> => {
+    try {
+        const response = await axiosInstance({ token: token }).post(`/customer-groups`, data)
+        return response.data.data.customer_group
+    } catch (error) {
+        if (error instanceof AxiosError) {
+            throw new Error(error.response?.data.message)
+        }
+        throw new Error("Failed to create customer group")
+    }
+}
+
+export const updateCustomerGroup = async (token: string, id: string, data: UpdateCustomerGroupDto): Promise<CustomerGroupModel> => {
+    try {
+        console.log('Update customer group data: ', data)
+        const response = await axiosInstance({ token: token }).patch(`/customer-groups/${id}`, data)
+        return response.data.data.customer_group
+    } catch (error) {
+        if (error instanceof AxiosError) {
+            throw new Error(error.response?.data.message)
+        }
+        throw new Error("Failed to update customer group")
+    }
+}
+
+export const deleteCustomerGroup = async (token: string, id: string): Promise<CustomerGroupModel> => {
+    try {
+        const response = await axiosInstance({ token: token }).delete(`/customer-groups/${id}`)
+        return response.data.data.customer_group
+    } catch (error) {
+        if (error instanceof AxiosError) {
+            throw new Error(error.response?.data.message)
+        }
+        throw new Error("Failed to delete customer group")
     }
 }

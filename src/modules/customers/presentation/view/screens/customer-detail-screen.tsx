@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge"
 import { formatDate } from "@/src/core/util/helper"
 import CustomerGroupTable from "@/src/modules/customer_groups/presentation/view/components/customer-group-table"
 import AppointmentTable from "@/src/modules/appointments/presentation/view/components/appointment-table"
+import CustomerGroupCustomersTable from "../components/customer-group-customers-table"
 
 
 const CustomerDetailScreen = ({ customerId }: { customerId: string }) => {
@@ -87,18 +88,21 @@ const CustomerDetailScreen = ({ customerId }: { customerId: string }) => {
             }
 
             <div className="w-full">
-                <CustomerGroupTable
+                <CustomerGroupCustomersTable
+                    isLoading={isLoading}
+                    customerGroups={customer?.customer_groups || []}
                     totalItems={customer?.customer_groups?.length || 0}
                     currentPage={1}
                     itemsPerPage={10}
                     onSearch={() => { }}
                     onFilterChange={() => { }}
                     onPageChange={() => { }}
-                    customerGroups={customer?.customer_groups || []} />
+                />
             </div>
 
             <div className="w-full">
                 <AppointmentTable
+                    isLoading={isLoading}
                     appointments={customer?.appointments || []}
                     totalItems={customer?.appointments?.length || 0}
                     currentPage={1}

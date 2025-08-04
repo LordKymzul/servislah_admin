@@ -14,6 +14,7 @@ import CustomerGroupEditSheet from "../components/customer-group-edit-sheet"
 import InfoScreen, { InfoScreenType } from "@/src/core/shared/presentation/screens/info-screen"
 import LoadingScreen from "@/src/core/shared/presentation/screens/loading-screen"
 import CustomerTable from "@/src/modules/customers/presentation/view/components/customer-table"
+import CustomersCustomerGroupTable from "../components/customers-customer-group-table"
 
 const CustomerGroupDetailScreen = ({ customerGroupId }: { customerGroupId: string }) => {
     const { data: customerGroup, isLoading, isError, error } = useGetCustomerGroupById(customerGroupId)
@@ -136,7 +137,7 @@ const CustomerGroupDetailScreen = ({ customerGroupId }: { customerGroupId: strin
                 )
             }
 
-            <CustomerTable
+            <CustomersCustomerGroupTable
                 customers={customerGroup?.customers || []}
                 totalItems={customerGroup?.metadata?.total || 0}
                 currentPage={1}

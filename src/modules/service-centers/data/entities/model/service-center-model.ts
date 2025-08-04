@@ -1,4 +1,5 @@
 import { MechanicModel } from "@/src/modules/mechanics/data/entities/model/mechanic-model";
+import { OperatingHoursModel } from "@/src/modules/operating-hours/data/entities/model/operating-hours-model";
 
 export interface ServiceCenterLocation {
     id?: string;
@@ -14,16 +15,7 @@ export interface ServiceCenterLocation {
     updated_at?: string;
 }
 
-export interface ServiceCenterOperatingHour {
-    id?: string;
-    service_center_id?: string;
-    day?: number;
-    open_time?: string;
-    close_time?: string;
-    is_active?: boolean;
-    created_at?: string;
-    updated_at?: string;
-}
+
 
 export interface ServiceCenterService {
     id?: string;
@@ -53,7 +45,7 @@ export interface ServiceCenterModel {
     services?: ServiceCenterService[];
     locations?: ServiceCenterLocation;
     appointments?: any;
-    operating_hours?: ServiceCenterOperatingHour[];
+    operating_hours?: OperatingHoursModel[];
     reviews?: any[];
     service_bays?: any;
     created_at?: string;

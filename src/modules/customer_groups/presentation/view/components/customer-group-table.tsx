@@ -2,10 +2,14 @@
 
 import DefaultTable from "@/src/core/shared/presentation/components/default-table"
 import { Badge } from "@/components/ui/badge"
-import { Edit, Eye, FileDown, Plus } from "lucide-react"
+import { Edit, Eye, FileDown, Plus, Trash2 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { CustomerGroupModel } from "../../../data/entities/model/customer-group-model"
 import { Button } from "@/components/ui/button"
+import AddCustomerGroupDialog from "./add-customer-group-dialog"
+import { useState } from "react"
+import { toast } from "sonner"
+import { useCreateCustomerGroup, useDeleteCustomerGroup } from "../../tanstack/customer-group-tanstack"
 
 interface CustomerGroupTableProps {
     customerGroups: CustomerGroupModel[]
@@ -30,6 +34,9 @@ const CustomerGroupTable = ({
 }: CustomerGroupTableProps) => {
 
     const router = useRouter()
+
+    const [isAddCustomerGroupDialogOpen, setIsAddCustomerGroupDialogOpen] = useState(false)
+    const { mutate: deleteCustomerGroup, isPending } = useDeleteCustomerGroup()
 
     const columns = [
         {
@@ -91,69 +98,72 @@ const CustomerGroupTable = ({
     }
 
     return (
-        <DefaultTable
-            title="Customer Groups"
-            description="Manage customer groups in the system"
-            data={customerGroups}
-            columns={columns}
-            filters={filters}
-            enableFiltering={true}
-            enableSearch={true}
-            enableSorting={true}
-            searchPlaceholder="Search customer groups..."
-            onSearch={onSearch}
-            onFilterChange={onFilterChange}
-            enablePagination={true}
-            totalItems={totalItems}
-            itemsPerPage={itemsPerPage}
-            currentPage={currentPage}
-            onPageChange={onPageChange}
-            isLoading={isLoading}
-            headerActions={[
-                {
-                    label: <Button variant="outline" size="sm">
-                        <FileDown className="w-4 h-4 mr-1" />
-                        Export
-                    </Button>,
-                    onClick: () => {
-                        console.log("Export")
+        <>
+            <DefaultTable
+                title="Customer Groups"
+                description="Manage customer groups in the system"
+                data={customerGroups}
+                columns={columns}
+                filters={filters}
+                enableFiltering={true}
+                enableSearch={true}
+                enableSorting={true}
+                searchPlaceholder="Search customer groups..."
+                onSearch={onSearch}
+                onFilterChange={onFilterChange}
+                enablePagination={true}
+                totalItems={totalItems}
+                itemsPerPage={itemsPerPage}
+                currentPage={currentPage}
+                onPageChange={onPageChange}
+                isLoading={isLoading}
+                headerActions={[
+                    {
+                        label: <Button variant="outline" size="sm">
+                            <FileDown className="w-4 h-4 mr-1" />
+                            Export
+                        </Button>,
+                        onClick: () => {
+                            console.log("Export")
+                        }
+                    },
+                    {
+                        label: <Button variant="outline" size="sm" onClick={() => setIsAddCustomerGroupDialogOpen(true)}>
+                            <Plus className="w-4 h-4 mr-1" />
+                            Create
+                        </Button>,
+                        onClick: () => {
+                        }
                     }
-                },
-                {
-                    label: <Button variant="outline" size="sm">
-                        <Plus className="w-4 h-4 mr-1" />
-                        Create
-                    </Button>,
-                    onClick: () => {
-                        console.log("Add Customer Group")
-                    }
-                }
-            ]}
-            rowActions={[
-                {
-                    label: (
-                        <div className="flex items-center gap-2">
-                            <Edit className="h-4 w-4" />
-                            <span>Edit</span>
-                        </div>
-                    ),
-                    onClick: (row) => {
-                        console.log("Edit:", row)
-                    }
-                },
-                {
-                    label: (
-                        <div className="flex items-center gap-2">
-                            <Eye className="h-4 w-4" />
-                            <span>View Details</span>
-                        </div>
-                    ),
-                    onClick: (row) => {
-                        handleViewCustomerGroup(row.id || "")
-                    }
-                }
-            ]}
-        />
+                ]}
+                rowActions={[
+
+                    {
+                        label: (
+                            <div className="flex items-center gap-2">
+                                <Eye className="h-4 w-4" />
+                                <span>View Details</span>
+                            </div>
+                        ),
+                        onClick: (row) => {
+                            handleViewCustomerGroup(row.id || "")
+                        }
+                    },
+                    {
+                        label: (
+                            <div className="flex items-center gap-2">
+                                <Trash2 className="h-4 w-4" />
+                                <span>Delete</span>
+                            </div>
+                        ),
+                        onClick: (row) => {
+                            deleteCustomerGroup(row.id || "")
+                        }
+                    },
+                ]}
+            />
+            <AddCustomerGroupDialog isOpen={isAddCustomerGroupDialogOpen} onClose={() => setIsAddCustomerGroupDialogOpen(false)} />
+        </>
     )
 }
 

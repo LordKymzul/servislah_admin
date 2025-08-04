@@ -5,7 +5,7 @@ import { useTheme } from "next-themes";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
 import {
-    Search,
+
     Calendar,
     Tag,
     Package,
@@ -28,6 +28,7 @@ import {
     Users2,
     ChartArea,
     GroupIcon,
+    Clock,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -88,6 +89,7 @@ const settingsNavigationItems: NavigationItem[] = [
         children: [
             { icon: Tag, label: "Services", href: "/settings/service-center/services" },
             { icon: Package, label: "Service Bay", href: "/settings/service-center/service-bay" },
+            { icon: Clock, label: "Operating Hours", href: "/settings/service-center/operating-hours" },
         ]
     },
     { icon: Users, label: "Profile", href: "/settings/profile" },

@@ -13,6 +13,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
+import { Checkbox } from "@/components/ui/checkbox"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -56,6 +57,14 @@ interface DefaultTableProps {
     data: any[]
     columns: Column[]
 
+    //Header props
+    enableHeader?: boolean
+
+    // Selection props
+    enableSelection?: boolean
+    selectedRows?: any[]
+    onSelectionChange?: (selectedRows: any[]) => void
+
     // Filtering props
     enableFiltering?: boolean
     filters?: Filter[]
@@ -92,6 +101,9 @@ const DefaultTable = ({
     description,
     data,
     columns,
+    enableSelection = false,
+    selectedRows,
+    onSelectionChange,
     enableFiltering = true,
     filters = [],
     onFilterChange,
@@ -107,10 +119,41 @@ const DefaultTable = ({
     onPageChange,
     headerActions = [],
     rowActions = [],
-    isLoading = false
+    isLoading = false,
+    enableHeader = true,
 }: DefaultTableProps) => {
     const [searchTerm, setSearchTerm] = React.useState("")
     const [activeFilters, setActiveFilters] = React.useState<Record<string, string>>({})
+    const [internalSelectedRows, setInternalSelectedRows] = React.useState<any[]>([])
+
+    // Only update internal state when selectedRows prop changes
+    React.useEffect(() => {
+        if (selectedRows !== undefined) {
+            setInternalSelectedRows(selectedRows)
+        }
+    }, [selectedRows])
+
+    const handleRowSelection = (row: any) => {
+        const rowId = row?.id || row
+        const newSelectedRows = internalSelectedRows.includes(rowId)
+            ? internalSelectedRows.filter(id => id !== rowId)
+            : [...internalSelectedRows, rowId]
+
+        if (selectedRows === undefined) {
+            setInternalSelectedRows(newSelectedRows)
+        }
+        onSelectionChange?.(newSelectedRows)
+    }
+
+    const handleSelectAll = () => {
+        const allIds = data.map(row => row.id)
+        const newSelectedRows = internalSelectedRows.length === data.length ? [] : allIds
+
+        if (selectedRows === undefined) {
+            setInternalSelectedRows(newSelectedRows)
+        }
+        onSelectionChange?.(newSelectedRows)
+    }
 
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value
@@ -140,27 +183,40 @@ const DefaultTable = ({
 
     const totalPages = Math.ceil(totalItems / itemsPerPage)
 
+    const isRowSelected = React.useCallback((row: any) => {
+        const rowId = row?.id || row
+        return internalSelectedRows.some(selectedId => selectedId === rowId)
+    }, [internalSelectedRows])
+
+    const isAllSelected = React.useCallback(() => {
+        return data.length > 0 && internalSelectedRows.length === data.length
+    }, [data.length, internalSelectedRows.length])
+
     return (
         <DefaultCard>
             <div className="flex flex-col h-full">
-                <div className="flex md:flex-row flex-col md:items-center items-start justify-between p-6 gap-2">
-                    <div className="flex flex-col">
-                        <h2 className="text-lg font-bold">{title}</h2>
-                        <p className="text-sm text-muted-foreground">
-                            {description}
-                        </p>
-                    </div>
-                    {headerActions.length > 0 && (
-                        <div className="flex flex-row items-center gap-2">
-                            {headerActions.map((action, index) => (
-                                <div key={index}>
-                                    {action.label}
+                {
+                    enableHeader && (
+                        <div className="flex md:flex-row flex-col md:items-center items-start justify-between p-6 gap-2">
+                            <div className="flex flex-col">
+                                <h2 className="text-lg font-bold">{title}</h2>
+                                <p className="text-sm text-muted-foreground">
+                                    {description}
+                                </p>
+                            </div>
+                            {headerActions.length > 0 && (
+                                <div className="flex flex-row items-center gap-2">
+                                    {headerActions.map((action, index) => (
+                                        <div key={index}>
+                                            {action.label}
+                                        </div>
+                                    ))}
                                 </div>
-                            ))}
+                            )}
                         </div>
-                    )}
-                </div>
 
+                    )
+                }
                 {(enableFiltering || enableSearch) && (
                     <div className="flex flex-row items-center w-full justify-between px-6 border-y py-3 gap-2">
                         {enableFiltering && (
@@ -271,10 +327,18 @@ const DefaultTable = ({
                         <Table>
                             <TableHeader className="bg-foreground/2">
                                 <TableRow>
+                                    {enableSelection && (
+                                        <TableHead className="w-12 px-6">
+                                            <Checkbox
+                                                checked={isAllSelected()}
+                                                onCheckedChange={handleSelectAll}
+                                            />
+                                        </TableHead>
+                                    )}
                                     {columns.map((column, index) => (
                                         <TableHead
                                             key={column.accessorKey}
-                                            className={index === 0 ? "px-6" : "py-3"}
+                                            className={index === 0 && !enableSelection ? "px-6" : "py-3"}
                                         >
                                             {column.header}
                                         </TableHead>
@@ -287,10 +351,18 @@ const DefaultTable = ({
                             <TableBody>
                                 {data.map((row, rowIndex) => (
                                     <TableRow key={rowIndex}>
+                                        {enableSelection && (
+                                            <TableCell className="w-12 px-6">
+                                                <Checkbox
+                                                    checked={isRowSelected(row)}
+                                                    onCheckedChange={() => handleRowSelection(row)}
+                                                />
+                                            </TableCell>
+                                        )}
                                         {columns.map((column, colIndex) => (
                                             <TableCell
                                                 key={`${rowIndex}-${column.accessorKey}`}
-                                                className={colIndex === 0 ? "px-6 py-3" : "py-3"}
+                                                className={colIndex === 0 && !enableSelection ? "px-6 py-3" : "py-3"}
                                             >
                                                 {column.cell
                                                     ? column.cell(row)
@@ -328,7 +400,14 @@ const DefaultTable = ({
                             {enablePagination && (
                                 <TableFooter>
                                     <TableRow className="border-t bg-foreground/2">
-                                        <TableCell colSpan={columns.length + (rowActions.length > 0 ? 1 : 0)} className="px-6 py-4">
+                                        <TableCell
+                                            colSpan={
+                                                columns.length +
+                                                (rowActions.length > 0 ? 1 : 0) +
+                                                (enableSelection ? 1 : 0)
+                                            }
+                                            className="px-6 py-4"
+                                        >
                                             <div className="flex items-center justify-between">
                                                 <div className="text-sm text-gray-600">
                                                     {`${(currentPage - 1) * itemsPerPage + 1} — ${Math.min(currentPage * itemsPerPage, totalItems)} of ${totalItems} results`}

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Edit, Eye, Plus } from "lucide-react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import AddCustomersCustomerGroupDialog from "@/src/modules/customer_groups/presentation/view/components/add-customers-customer-group-dialog"
 
 interface CustomerTableProps {
     customers: CustomersModel[]
@@ -17,6 +18,7 @@ interface CustomerTableProps {
     onSearch: (term: string) => void
     onFilterChange: (filters: Record<string, string>) => void
     onPageChange: (page: number) => void
+
 }
 
 
@@ -28,9 +30,12 @@ const CustomerTable = ({
     isLoading,
     onSearch,
     onFilterChange,
-    onPageChange
+    onPageChange,
+ 
+
 }: CustomerTableProps) => {
     const router = useRouter()
+    const [isAddCustomersCustomerGroupDialogOpen, setIsAddCustomersCustomerGroupDialogOpen] = useState(false)
     const columns = [
         {
             header: "Email",
@@ -76,60 +81,66 @@ const CustomerTable = ({
     return (
 
         < div className="w-full" >
-            <DefaultTable
-                title="Customers"
-                description="Manage customers in this group"
-                data={customers || []}
-                columns={columns}
-                filters={filters}
-                enableFiltering={true}
-                enableSearch={true}
-                enableSorting={true}
-                searchPlaceholder="Search customers..."
-                onSearch={onSearch}
-                onFilterChange={onFilterChange}
-                enablePagination={true}
-                totalItems={totalItems}
-                itemsPerPage={itemsPerPage}
-                currentPage={currentPage}
-                onPageChange={onPageChange}
-                isLoading={isLoading}
-                headerActions={[
-                    {
-                        label: <Button>
-                            <Plus className="w-4 h-4 mr-2" />
-                            Add
-                        </Button>,
-                        onClick: () => {
-                            console.log("Add customer")
+            <>
+                <DefaultTable
+                   
+                    title="Customers"
+                    description="Manage customers in this group"
+                    data={customers || []}
+                    columns={columns}
+                    filters={filters}
+                    enableFiltering={true}
+                    enableSearch={true}
+                    enableSorting={true}
+                    searchPlaceholder="Search customers..."
+                    onSearch={onSearch}
+                    onFilterChange={onFilterChange}
+                    enablePagination={true}
+                    totalItems={totalItems}
+                    itemsPerPage={itemsPerPage}
+                    currentPage={currentPage}
+                    onPageChange={onPageChange}
+                    isLoading={isLoading}
+                    headerActions={[
+                        {
+                            label: <Button onClick={() => setIsAddCustomersCustomerGroupDialogOpen(true)}>
+                                <Plus className="w-4 h-4 mr-2" />
+                                Add
+                            </Button>,
+                            onClick: () => {
+                            }
                         }
-                    }
-                ]}
-                rowActions={[
-                    {
-                        label: (
-                            <div className="flex items-center gap-2">
-                                <Edit className="h-4 w-4" />
-                                <span>Edit</span>
-                            </div>
-                        ),
-                        onClick: (row) => {
-                            console.log("Edit:", row)
+                    ]}
+                    rowActions={[
+                        {
+                            label: (
+                                <div className="flex items-center gap-2">
+                                    <Edit className="h-4 w-4" />
+                                    <span>Edit</span>
+                                </div>
+                            ),
+                            onClick: (row) => {
+                                console.log("Edit:", row)
+                            }
+                        },
+                        {
+                            label: (
+                                <div className="flex items-center gap-2">
+                                    <Eye className="h-4 w-4" />
+                                    <span>View Details</span>
+                                </div>
+                            ),
+                            onClick: (row) => {
+                                router.push(`/customers/${row.id}`)
+                            }
                         }
-                    },
-                    {
-                        label: (
-                            <div className="flex items-center gap-2">
-                                <Eye className="h-4 w-4" />
-                                <span>View Details</span>
-                            </div>
-                        ),
-                        onClick: (row) => {
-                            router.push(`/customers/${row.id}`)
-                        }
-                    }
-                ]}
-            />
+                    ]}
+                />
+                <AddCustomersCustomerGroupDialog
+                    isOpen={isAddCustomersCustomerGroupDialogOpen}
+                    onClose={() => setIsAddCustomersCustomerGroupDialogOpen(false)}
+                />
+            </>
         </div >
     )
 }

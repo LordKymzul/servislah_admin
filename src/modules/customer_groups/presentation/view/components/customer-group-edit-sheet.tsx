@@ -24,6 +24,10 @@ import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
 import { useQueryClient } from "@tanstack/react-query"
 import { CustomerGroupModel } from "../../../data/entities/model/customer-group-model"
+import { updateCustomerGroup } from "../../../data/services/customer-group-api.service"
+import { useUpdateCustomerGroup } from "../../tanstack/customer-group-tanstack"
+import { useParams } from "next/navigation"
+import { Loader2 } from "lucide-react"
 
 
 interface CustomerGroupEditSheetProps {
@@ -36,23 +40,37 @@ const formSchema = z.object({
     name: z.string().min(2, {
         message: "Name must be at least 2 characters.",
     }),
+    description: z.string().min(2, {
+        message: "Description must be at least 2 characters.",
+    }),
 })
 
 type FormValues = z.infer<typeof formSchema>
 
 const CustomerGroupEditSheet = ({ customerGroup, open, onOpenChange }: CustomerGroupEditSheetProps) => {
     const queryClient = useQueryClient()
+
+    const { id } = useParams()
+    if (!id) {
+        return null
+    }
+
+    const { mutate: updateCustomerGroup, isPending } = useUpdateCustomerGroup(id as string)
     const form = useForm<FormValues>({
         resolver: zodResolver(formSchema) as any,
         defaultValues: {
             name: customerGroup?.name || "",
+            description: customerGroup?.description || "",
         },
     })
 
     const handleSubmit: SubmitHandler<FormValues> = (values: FormValues) => {
-        // TODO: Implement update logic
         console.log(values)
-        onOpenChange(false)
+        updateCustomerGroup(values, {
+            onSettled: () => {
+                onOpenChange(false)
+            }
+        })
     }
 
     return (
@@ -76,14 +94,32 @@ const CustomerGroupEditSheet = ({ customerGroup, open, onOpenChange }: CustomerG
                                         <Input placeholder="Enter your name" {...field} />
                                     </FormControl>
                                     <FormMessage />
+
+
+                                </FormItem>
+                            )}
+                        />
+
+                        <FormField
+                            control={form.control}
+                            name="description"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Description</FormLabel>
+                                    <FormControl>
+                                        <Input placeholder="Enter your description" {...field} />
+                                    </FormControl>
+                                    <FormMessage />
+
+
                                 </FormItem>
                             )}
                         />
 
                         <SheetFooter>
                             <div className="flex flex-row items-center justify-end w-full gap-x-2">
-                                <Button type="submit">
-                                    Save
+                                <Button type="submit" disabled={isPending}>
+                                    {isPending ? <Loader2 className="w-4 h-4 mr-2" /> : "Save"}
                                 </Button>
                             </div>
                         </SheetFooter>

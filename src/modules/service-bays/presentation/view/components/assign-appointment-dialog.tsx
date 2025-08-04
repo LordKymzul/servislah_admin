@@ -193,8 +193,13 @@ export function AssignAppointmentDialog({
             <div>
               <div className="font-medium">{serviceBay.name}</div>
               <div className="text-sm text-muted-foreground">
-                Bay {serviceBay.bay_number} • Capacity: {serviceBay.capacity} •
+                {/* Bay {serviceBay.bay_number} • Capacity: {serviceBay.capacity} •
                 RM {serviceBay.hourly_rate}/hr
+                {serviceBay.specializations?.map((spec, index) => (
+                  <Badge key={index} variant="outline" className="text-xs">
+                    {spec}
+                  </Badge>
+                ))} */}
               </div>
               <div className="flex gap-1 mt-1">
                 {serviceBay.specializations?.slice(0, 3).map((spec, index) => (
