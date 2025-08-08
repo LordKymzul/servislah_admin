@@ -3,6 +3,7 @@
 
 export class QueryAppointmentDto {
     customer_id?: string;
+    mechanic_id?: string;
     date?: string;
     time?: string;
     status?: string;

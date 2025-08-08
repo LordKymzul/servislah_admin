@@ -63,6 +63,12 @@ export const CustomerGroupScreen = () => {
     return (
         <div className="mx-auto py-4 px-4 w-full">
             <CustomerGroupTable
+                clearFilters={() => {
+                    setQueryParams({
+                        page: 1,
+                        limit: itemsPerPage
+                    })
+                }}
                 isLoading={isLoading}
                 customerGroups={customerGroupsData?.customer_groups || []}
                 totalItems={customerGroupsData?.metadata?.total || 0}

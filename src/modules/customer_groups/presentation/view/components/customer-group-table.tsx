@@ -20,6 +20,7 @@ interface CustomerGroupTableProps {
     onFilterChange: (filters: Record<string, string>) => void
     onPageChange: (page: number) => void
     isLoading: boolean
+    clearFilters: () => void
 }
 
 const CustomerGroupTable = ({
@@ -30,7 +31,8 @@ const CustomerGroupTable = ({
     onSearch,
     onFilterChange,
     onPageChange,
-    isLoading
+    isLoading,
+    clearFilters
 }: CustomerGroupTableProps) => {
 
     const router = useRouter()
@@ -117,6 +119,7 @@ const CustomerGroupTable = ({
                 currentPage={currentPage}
                 onPageChange={onPageChange}
                 isLoading={isLoading}
+                clearFilters={clearFilters}
                 headerActions={[
                     {
                         label: <Button variant="outline" size="sm">

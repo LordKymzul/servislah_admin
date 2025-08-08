@@ -29,6 +29,7 @@ import {
     ChartArea,
     GroupIcon,
     Clock,
+    MessageCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -68,6 +69,7 @@ const navigationItems: NavigationItem[] = [
     { icon: Calendar, label: "Appointments", href: "/appointments" },
     { icon: Wrench, label: "Mechanics", href: "/mechanics" },
     { icon: Car, label: "Vehicles", href: "/vehicles" },
+    { icon: MessageCircle, label: "Reviews", href: "/reviews" },
     {
         icon: Users, label: "Customers", href: "/customers",
         children: [

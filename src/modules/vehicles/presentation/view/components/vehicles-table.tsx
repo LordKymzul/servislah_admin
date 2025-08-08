@@ -140,6 +140,7 @@ const VehiclesTable = () => {
 
     return (
         <DefaultTable
+            isLoading={isLoading}
             title="Vehicles"
             description="Manage all vehicles in the system"
             data={vehiclesData?.vehicles || []}

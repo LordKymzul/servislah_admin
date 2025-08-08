@@ -2,7 +2,7 @@
 import { useDeleteMechanic, useQueryMechanicById } from "../../tanstack/mechanic-tanstack";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Building2, CalendarDays, Mail, MapPin, Phone, Wrench, Star, Copy, ChevronRight, Edit, MoreHorizontal, Trash } from "lucide-react";
+import { Building2, CalendarDays, Mail, MapPin, Phone, Wrench, Star, Copy, ChevronRight, Edit, MoreHorizontal, Trash, Users } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import InfoScreen from "@/src/core/shared/presentation/screens/info-screen";
 import { InfoScreenType } from "@/src/core/shared/presentation/screens/info-screen";
@@ -16,6 +16,7 @@ import DefaultAlertDialog from "@/src/core/shared/presentation/components/defaul
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AppointmentTable from "@/src/modules/appointments/presentation/view/components/appointment-table";
 import CustomerTable from "@/src/modules/customers/presentation/view/components/customer-table";
+import DataCard from "@/src/core/shared/presentation/components/data-card";
 
 const MechanicDetailScreen = ({ mechanicId }: { mechanicId: string }) => {
     const { data: mechanic, isLoading, error } = useQueryMechanicById(mechanicId);
@@ -69,62 +70,110 @@ const MechanicDetailScreen = ({ mechanicId }: { mechanicId: string }) => {
         <>
             <div className="flex flex-col gap-4 p-6">
 
-                <DefaultCard>
-                    <div className="p-6 border-b">
-                        <div className="flex items-center justify-between">
-                            <h2 className="md:text-lg text-base font-semibold">Summary</h2>
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" size="icon">
-                                        <MoreHorizontal className="w-4 h-4" />
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent>
-                                    <DropdownMenuItem onClick={() => setIsEditSheetOpen(true)}>
-                                        <Edit className="w-4 h-4 mr-2" />
-                                        Edit
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem onClick={() => setIsDeleteDialogOpen(true)}>
-                                        <Trash className="w-4 h-4 mr-2" />
-                                        Delete
-                                    </DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-                        </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <DataCard
+                        title="Total Appointments"
+                        value={mechanic?.appointments?.length.toString() || "0"}
+                        icon={<Users className="w-4 h-4" />}
+                        description="Total number of appointments"
+                    />
+                    <DataCard
+                        title="Total Customers"
+                        value={"0"}
+                        icon={<Users className="w-4 h-4" />}
+                        description="Total number of customers"
+                    />
+                    <DataCard
+                        title="Total Reviews"
+                        value={"0"}
+                        icon={<Users className="w-4 h-4" />}
+                        description="Total number of reviews"
+                    />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="col-span-1 md:col-span-2">
+                        <DefaultCard>
+                            <div className="p-6 border-b">
+                                <div className="flex items-center justify-between">
+                                    <h2 className="md:text-lg text-base font-semibold">Summary</h2>
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button variant="ghost" size="icon">
+                                                <MoreHorizontal className="w-4 h-4" />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent>
+                                            <DropdownMenuItem onClick={() => setIsEditSheetOpen(true)}>
+                                                <Edit className="w-4 h-4 mr-2" />
+                                                Edit
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem onClick={() => setIsDeleteDialogOpen(true)}>
+                                                <Trash className="w-4 h-4 mr-2" />
+                                                Delete
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                </div>
+                            </div>
+
+                            <div className="divide-y">
+                                <div className="flex items-center justify-between p-6">
+                                    <div className="text-sm">Email</div>
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-sm font-medium">{mechanic.user?.email}</span>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center justify-between p-6">
+                                    <div className="text-sm">Status</div>
+                                    <div className="text-sm">
+                                        <Badge variant="secondary">{mechanic.is_active ? "Active" : "Inactive"}</Badge>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center justify-between p-6">
+                                    <div className="text-sm">Experience Level</div>
+                                    <div className="text-sm">
+                                        <Badge variant="secondary">{mechanic.experience_level}</Badge>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center justify-between p-6">
+                                    <div className="text-sm">Years of Experience</div>
+                                    <div className="text-sm">{mechanic.years_of_exp}</div>
+                                </div>
+                            </div>
+
+
+
+                        </DefaultCard>
                     </div>
 
-                    <div className="divide-y">
-                        <div className="flex items-center justify-between p-6">
-                            <div className="text-sm">Email</div>
-                            <div className="flex items-center gap-2">
-                                <span className="text-sm font-medium">{mechanic.user?.email}</span>
-                            </div>
-                        </div>
 
-                        <div className="flex items-center justify-between p-6">
-                            <div className="text-sm">Status</div>
-                            <div className="text-sm">
-                                <Badge variant="secondary">{mechanic.is_active ? "Active" : "Inactive"}</Badge>
+                    <div className="col-span-1 md:col-span-1">
+                        <DefaultCard>
+                            <div className="p-6 border-b">
+                                <h3 className="text-lg font-medium">Specializations</h3>
                             </div>
-                        </div>
 
-                        <div className="flex items-center justify-between p-6">
-                            <div className="text-sm">Experience Level</div>
-                            <div className="text-sm">
-                                <Badge variant="secondary">{mechanic.experience_level}</Badge>
+                            <div className="divide-y">
+                                {mechanic.specializations?.map((spec) => (
+                                    <div key={spec.id} className="flex items-center justify-between p-6">
+                                        <div className="text-sm">{spec.name}</div>
+                                        <div className="text-sm">
+                                            <Badge variant="secondary">{spec.description}</Badge>
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
-                        </div>
-
-                        <div className="flex items-center justify-between p-6">
-                            <div className="text-sm">Years of Experience</div>
-                            <div className="text-sm">{mechanic.years_of_exp}</div>
-                        </div>
+                        </DefaultCard>
                     </div>
 
 
 
-                </DefaultCard>
-
+                </div>
                 <Tabs value={activeTab} onValueChange={setActiveTab}>
                     <TabsList>
                         <TabsTrigger value="appointments">Appointments</TabsTrigger>
@@ -147,7 +196,7 @@ const MechanicDetailScreen = ({ mechanicId }: { mechanicId: string }) => {
                     </TabsContent>
                     <TabsContent value="customers">
                         <CustomerTable
-                            
+
                             isLoading={isLoading}
                             customers={[]}
                             totalItems={0}

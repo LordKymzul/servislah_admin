@@ -33,6 +33,7 @@ import {
 } from "@/components/ui/menubar"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
+import { clear } from "console"
 
 export interface Column {
     header: string
@@ -69,6 +70,7 @@ interface DefaultTableProps {
     enableFiltering?: boolean
     filters?: Filter[]
     onFilterChange?: (filters: Record<string, string>) => void
+    clearFilters?: () => void
 
     // Search props
     enableSearch?: boolean
@@ -121,6 +123,7 @@ const DefaultTable = ({
     rowActions = [],
     isLoading = false,
     enableHeader = true,
+    clearFilters,
 }: DefaultTableProps) => {
     const [searchTerm, setSearchTerm] = React.useState("")
     const [activeFilters, setActiveFilters] = React.useState<Record<string, string>>({})
@@ -176,10 +179,11 @@ const DefaultTable = ({
         onFilterChange?.(newFilters)
     }
 
-    const clearFilters = () => {
-        setActiveFilters({})
-        onFilterChange?.({})
-    }
+    // const clearFilters = () => {
+    //     // setActiveFilters({})
+    //     // onFilterChange?.({})
+    //     clearFilters?.()
+    // }
 
     const totalPages = Math.ceil(totalItems / itemsPerPage)
 
@@ -267,7 +271,11 @@ const DefaultTable = ({
                                                 {Object.keys(activeFilters).length > 0 && (
                                                     <>
                                                         <MenubarSeparator />
-                                                        <MenubarItem onClick={clearFilters}>
+                                                        <MenubarItem onClick={() => {
+                                                            setActiveFilters({})
+                                                            onFilterChange?.({})
+                                                            clearFilters?.()
+                                                        }}>
                                                             Clear All Filters
                                                         </MenubarItem>
                                                     </>

@@ -197,6 +197,7 @@ const MechanicsTable = () => {
                         }
                     }
                 ]}
+                isLoading={isLoading}
                 columns={columns}
                 filters={filters}
                 enableFiltering={true}
