@@ -4,9 +4,13 @@ import DefaultTable from "@/src/core/shared/presentation/components/default-tabl
 import { ReviewModel } from "@/src/modules/reviews/data/entities/model/review-model"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Edit, Eye, Plus, Star } from "lucide-react"
+import { Edit, Eye, Plus, Star, Trash } from "lucide-react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { deleteReview } from "../../../data/services/review-api.service"
+import { useDeleteReview } from "../../tanstack/review-tanstack"
+import { toast } from "sonner"
+import DefaultAlertDialog from "@/src/core/shared/presentation/components/default-alert-dialog"
 
 interface ReviewTableProps {
     reviews: ReviewModel[]
@@ -32,6 +36,10 @@ const ReviewTable = ({
     clearFilters,
 }: ReviewTableProps) => {
     const router = useRouter()
+
+    const { mutate: deleteReviewMutation, isPending } = useDeleteReview()
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+    const [selectedReview, setSelectedReview] = useState<ReviewModel | null>(null)
 
     const columns = [
         {
@@ -110,41 +118,71 @@ const ReviewTable = ({
     ]
 
     return (
-        <div className="w-full">
-            <DefaultTable
-                title="Reviews"
-                description="Customer reviews and ratings"
-                data={reviews || []}
-                columns={columns}
-                filters={filters}
-                enableFiltering={true}
-                enableSearch={true}
-                enableSorting={true}
-                searchPlaceholder="Search reviews..."
-                onSearch={onSearch}
-                onFilterChange={onFilterChange}
-                enablePagination={true}
-                totalItems={totalItems}
-                itemsPerPage={itemsPerPage}
-                currentPage={currentPage}
-                onPageChange={onPageChange}
-                isLoading={isLoading}
-                clearFilters={clearFilters}
-                rowActions={[
-                    {
-                        label: (
-                            <div className="flex items-center gap-2">
-                                <Eye className="h-4 w-4" />
-                                <span>View Details</span>
-                            </div>
-                        ),
-                        onClick: (row) => {
-                            router.push(`/reviews/${row.id}`)
+        <>
+            <div className="w-full">
+                <DefaultTable
+                    title="Reviews"
+                    description="Customer reviews and ratings"
+                    data={reviews || []}
+                    columns={columns}
+                    filters={filters}
+                    enableFiltering={true}
+                    enableSearch={true}
+                    enableSorting={true}
+                    searchPlaceholder="Search reviews..."
+                    onSearch={onSearch}
+                    onFilterChange={onFilterChange}
+                    enablePagination={true}
+                    totalItems={totalItems}
+                    itemsPerPage={itemsPerPage}
+                    currentPage={currentPage}
+                    onPageChange={onPageChange}
+                    isLoading={isLoading}
+                    clearFilters={clearFilters}
+                    rowActions={[
+                        {
+                            label: (
+                                <div className="flex items-center gap-2">
+                                    <Eye className="h-4 w-4" />
+                                    <span>View Details</span>
+                                </div>
+                            ),
+                            onClick: (row) => {
+                                router.push(`/reviews/${row.id}`)
+                            }
+                        },
+                        {
+                            label: (
+                                <div className="flex items-center gap-2">
+                                    <Trash className="h-4 w-4" />
+                                    <span>Delete</span>
+                                </div>
+                            ),
+                            onClick: (row) => {
+                                setSelectedReview(row)
+                                setIsDeleteDialogOpen(true)
+                            }
                         }
+                    ]}
+                />
+            </div>
+            <DefaultAlertDialog
+                onOpenChange={setIsDeleteDialogOpen}
+                open={isDeleteDialogOpen}
+                title="Delete Review"
+                description="Are you sure you want to delete this review?"
+                loading={isPending}
+                onConfirm={() => {
+                    if (selectedReview) {
+                        deleteReviewMutation(selectedReview.id, {
+                            onSettled: () => {
+                                setIsDeleteDialogOpen(false)
+                            }
+                        })
                     }
-                ]}
+                }}
             />
-        </div>
+        </>
     )
 }
 

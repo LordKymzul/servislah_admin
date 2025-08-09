@@ -11,6 +11,7 @@ import { getDayName } from "@/src/core/util/helper"
 import AddOperatingHoursDialog from "./add-operating-hours-dialog"
 import { useDeleteOperatingHours } from "../../tanstack/operating-hours-tanstack"
 import { toast } from "sonner"
+import DefaultAlertDialog from "@/src/core/shared/presentation/components/default-alert-dialog"
 
 interface OperatingHoursTableProps {
     operatingHours: OperatingHoursModel[]
@@ -39,6 +40,8 @@ const OperatingHoursTable = ({
     const [isOpen, setIsOpen] = useState(false)
 
     const { mutate: deleteOperatingHours, isPending } = useDeleteOperatingHours()
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+    const [selectedOperatingHours, setSelectedOperatingHours] = useState<OperatingHoursModel | null>(null)
 
     const handleDelete = (id: string) => {
         deleteOperatingHours(id)
@@ -151,7 +154,8 @@ const OperatingHoursTable = ({
                             </div>
                         ),
                         onClick: (row) => {
-                            handleDelete(row.id)
+                            setSelectedOperatingHours(row)
+                            setIsDeleteModalOpen(true)
                         }
                     },
 
@@ -161,6 +165,21 @@ const OperatingHoursTable = ({
                 service_center_id={service_center_id}
                 isOpen={isOpen}
                 onClose={() => { setIsOpen(false) }}
+            />
+
+            <DefaultAlertDialog
+                open={isDeleteModalOpen}
+                onOpenChange={setIsDeleteModalOpen}
+                title="Delete Operating Hours"
+                description="Are you sure you want to delete this operating hours?"
+                onConfirm={() => {
+                    deleteOperatingHours(selectedOperatingHours?.id || '', {
+                        onSettled: () => {
+                            setIsDeleteModalOpen(false)
+                        },
+
+                    })
+                }}
             />
         </div>
     )

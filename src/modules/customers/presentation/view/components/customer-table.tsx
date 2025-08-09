@@ -4,10 +4,11 @@ import DefaultTable from "@/src/core/shared/presentation/components/default-tabl
 import { CustomersModel } from "@/src/modules/customers/data/entities/models/customers-model"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Edit, Eye, Plus } from "lucide-react"
+import { Edit, Eye, Plus, Trash } from "lucide-react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import AddCustomersCustomerGroupDialog from "@/src/modules/customer_groups/presentation/view/components/add-customers-customer-group-dialog"
+import DefaultAlertDialog from "@/src/core/shared/presentation/components/default-alert-dialog"
 
 interface CustomerTableProps {
     customers: CustomersModel[]
@@ -31,11 +32,16 @@ const CustomerTable = ({
     onSearch,
     onFilterChange,
     onPageChange,
- 
+
 
 }: CustomerTableProps) => {
     const router = useRouter()
     const [isAddCustomersCustomerGroupDialogOpen, setIsAddCustomersCustomerGroupDialogOpen] = useState(false)
+
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+    const [selectedCustomer, setSelectedCustomer] = useState<CustomersModel | null>(null)
+
+
     const columns = [
         {
             header: "Email",
@@ -83,7 +89,7 @@ const CustomerTable = ({
         < div className="w-full" >
             <>
                 <DefaultTable
-                   
+
                     title="Customers"
                     description="Manage customers in this group"
                     data={customers || []}
@@ -112,17 +118,7 @@ const CustomerTable = ({
                         }
                     ]}
                     rowActions={[
-                        {
-                            label: (
-                                <div className="flex items-center gap-2">
-                                    <Edit className="h-4 w-4" />
-                                    <span>Edit</span>
-                                </div>
-                            ),
-                            onClick: (row) => {
-                                console.log("Edit:", row)
-                            }
-                        },
+
                         {
                             label: (
                                 <div className="flex items-center gap-2">
@@ -133,12 +129,35 @@ const CustomerTable = ({
                             onClick: (row) => {
                                 router.push(`/customers/${row.id}`)
                             }
+                        },
+                        {
+                            label: (
+                                <div className="flex items-center gap-2">
+                                    <Trash className="h-4 w-4" />
+                                    <span>Delete</span>
+                                </div>
+                            ),
+                            onClick: (row) => {
+                                setSelectedCustomer(row)
+                                setIsDeleteDialogOpen(true)
+                            }
                         }
+
                     ]}
                 />
                 <AddCustomersCustomerGroupDialog
                     isOpen={isAddCustomersCustomerGroupDialogOpen}
                     onClose={() => setIsAddCustomersCustomerGroupDialogOpen(false)}
+                />
+                <DefaultAlertDialog
+                    onOpenChange={setIsDeleteDialogOpen}
+                    open={isDeleteDialogOpen}
+                    title="Delete Customer"
+                    description="Are you sure you want to delete this customer?"
+
+                    onConfirm={() => {
+
+                    }}
                 />
             </>
         </div >

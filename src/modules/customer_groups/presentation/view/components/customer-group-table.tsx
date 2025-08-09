@@ -10,6 +10,7 @@ import AddCustomerGroupDialog from "./add-customer-group-dialog"
 import { useState } from "react"
 import { toast } from "sonner"
 import { useCreateCustomerGroup, useDeleteCustomerGroup } from "../../tanstack/customer-group-tanstack"
+import DefaultAlertDialog from "@/src/core/shared/presentation/components/default-alert-dialog"
 
 interface CustomerGroupTableProps {
     customerGroups: CustomerGroupModel[]
@@ -39,6 +40,8 @@ const CustomerGroupTable = ({
 
     const [isAddCustomerGroupDialogOpen, setIsAddCustomerGroupDialogOpen] = useState(false)
     const { mutate: deleteCustomerGroup, isPending } = useDeleteCustomerGroup()
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+    const [selectedCustomerGroup, setSelectedCustomerGroup] = useState<CustomerGroupModel | null>(null)
 
     const columns = [
         {
@@ -160,12 +163,30 @@ const CustomerGroupTable = ({
                             </div>
                         ),
                         onClick: (row) => {
-                            deleteCustomerGroup(row.id || "")
+                            setSelectedCustomerGroup(row)
+                            setIsDeleteDialogOpen(true)
                         }
                     },
                 ]}
             />
             <AddCustomerGroupDialog isOpen={isAddCustomerGroupDialogOpen} onClose={() => setIsAddCustomerGroupDialogOpen(false)} />
+
+            <DefaultAlertDialog
+                onOpenChange={setIsDeleteDialogOpen}
+                open={isDeleteDialogOpen}
+                title="Delete Customer Group"
+                description="Are you sure you want to delete this customer group?"
+                loading={isPending}
+                onConfirm={() => {
+                    if (selectedCustomerGroup) {
+                        deleteCustomerGroup(selectedCustomerGroup.id || "", {
+                            onSettled: () => {
+                                setIsDeleteDialogOpen(false)
+                            }
+                        })
+                    }
+                }}
+            />
         </>
     )
 }

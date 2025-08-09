@@ -4,9 +4,11 @@ import DefaultTable from "@/src/core/shared/presentation/components/default-tabl
 import { AppointmentModel } from "../../../data/entities/model/appointment-model"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Calendar, Edit, Eye } from "lucide-react"
+import { Calendar, Edit, Eye, Trash2 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { formatDate, formatTime } from "@/src/core/util/helper"
+import { useState } from "react"
+import DefaultAlertDialog from "@/src/core/shared/presentation/components/default-alert-dialog"
 
 interface AppointmentTableProps {
     appointments: AppointmentModel[]
@@ -17,6 +19,7 @@ interface AppointmentTableProps {
     onFilterChange: (filters: Record<string, string>) => void
     onPageChange: (page: number) => void
     isLoading: boolean
+    enableHeader: boolean
 }
 
 const AppointmentTable = ({
@@ -27,9 +30,13 @@ const AppointmentTable = ({
     onSearch,
     onFilterChange,
     onPageChange,
-    isLoading
+    isLoading,
+    enableHeader = true
 }: AppointmentTableProps) => {
     const router = useRouter()
+
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+    const [selectedAppointment, setSelectedAppointment] = useState<AppointmentModel | null>(null)
 
     const columns = [
         {
@@ -94,62 +101,77 @@ const AppointmentTable = ({
     ]
 
     return (
-        <div className="w-full">
-            <DefaultTable
-                title="Appointments"
-                description="Manage your appointments here"
-                data={appointments}
-                columns={columns}
-                filters={filters}
-                enableFiltering={true}
-                enableSearch={true}
-                enableSorting={true}
-                searchPlaceholder="Search appointments..."
-                onSearch={onSearch}
-                onFilterChange={onFilterChange}
-                enablePagination={true}
-                totalItems={totalItems}
-                itemsPerPage={itemsPerPage}
-                currentPage={currentPage}
-                onPageChange={onPageChange}
-                isLoading={isLoading}
-                headerActions={[
-                    {
-                        label: <Button>
-                            <Calendar className="w-4 h-4 mr-2" />
-                            New Appointment
-                        </Button>,
-                        onClick: () => {
-                            console.log("Add appointment")
+        <>
+            <div className="w-full">
+                <DefaultTable
+
+                    title="Appointments"
+                    description="Manage your appointments here"
+                    data={appointments}
+                    columns={columns}
+                    filters={filters}
+                    enableFiltering={true}
+                    enableSearch={true}
+                    enableSorting={true}
+                    searchPlaceholder="Search appointments..."
+                    onSearch={onSearch}
+                    onFilterChange={onFilterChange}
+                    enablePagination={true}
+                    totalItems={totalItems}
+                    itemsPerPage={itemsPerPage}
+                    currentPage={currentPage}
+                    onPageChange={onPageChange}
+                    isLoading={isLoading}
+                    headerActions={enableHeader ? [
+                        {
+                            label: <Button>
+                                <Calendar className="w-4 h-4 mr-2" />
+                                New Appointment
+                            </Button>,
+                            onClick: () => {
+                                console.log("Add appointment")
+                            }
                         }
-                    }
-                ]}
-                rowActions={[
-                    {
-                        label: (
-                            <div className="flex items-center gap-2">
-                                <Edit className="h-4 w-4" />
-                                <span>Edit</span>
-                            </div>
-                        ),
-                        onClick: (row) => {
-                            console.log("Edit:", row)
-                        }
-                    },
-                    {
-                        label: (
-                            <div className="flex items-center gap-2">
-                                <Eye className="h-4 w-4" />
-                                <span>View Details</span>
-                            </div>
-                        ),
-                        onClick: (row) => {
-                            router.push(`/appointments/${row.id}`)
-                        }
-                    }
-                ]}
+                    ] : []}
+                    rowActions={[
+
+                        {
+                            label: (
+                                <div className="flex items-center gap-2">
+                                    <Eye className="h-4 w-4" />
+                                    <span>View Details</span>
+                                </div>
+                            ),
+                            onClick: (row) => {
+                                router.push(`/appointments/${row.id}`)
+                            }
+                        },
+                        {
+                            label: (
+                                <div className="flex items-center gap-2">
+                                    <Trash2 className="h-4 w-4" />
+                                    <span>Delete</span>
+                                </div>
+                            ),
+                            onClick: (row) => {
+                                setSelectedAppointment(row)
+                                setIsDeleteModalOpen(true)
+                            }
+                        },
+                    ]}
+                />
+            </div>
+
+            <DefaultAlertDialog
+                open={isDeleteModalOpen}
+                onOpenChange={setIsDeleteModalOpen}
+                title="Delete Appointment"
+                description="Are you sure you want to delete this appointment?"
+                onConfirm={() => {
+                    console.log("Delete:", selectedAppointment)
+                }}
             />
-        </div>
+        </>
     )
 }
 

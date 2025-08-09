@@ -171,6 +171,7 @@ const CustomerDetailScreen = ({ customerId }: { customerId: string }) => {
                     <TabsContent value="appointments">
                         <div className="w-full">
                             <AppointmentTable
+                                enableHeader={false}
                                 isLoading={isAppointmentsLoading}
                                 appointments={appointments?.appointments || []}
                                 totalItems={appointments?.metadata?.total || 0}

@@ -33,7 +33,7 @@ export const getAppointments = async (token: string, query: QueryAppointmentDto)
 export const getAppointmentById = async (token: string, id: string): Promise<AppointmentModel> => {
     try {
         const response = await axiosInstance({ token: token }).get(`/appointments/${id}`)
-        return response.data.data.appointment
+        return response.data.data.appoinment
     } catch (error) {
         if (error instanceof AxiosError) {
             throw new Error(error.response?.data.message || "An error occurred while fetching appointment");
