@@ -22,6 +22,7 @@ import ReviewTable from "@/src/modules/reviews/presentation/view/components/revi
 import { useGetReviews } from "@/src/modules/reviews/presentation/tanstack/review-tanstack"
 import { useQueryAppointments } from "@/src/modules/appointments/presentation/tanstack/appointment-tanstack"
 import { useGetCustomerGroups } from "@/src/modules/customer_groups/presentation/tanstack/customer-group-tanstack"
+import VehiclesTable from "@/src/modules/vehicles/presentation/view/components/vehicles-table"
 
 const CustomerDetailScreen = ({ customerId }: { customerId: string }) => {
     const { data: customer, isLoading, isError, error } = useGetCustomerById(customerId)
@@ -186,6 +187,7 @@ const CustomerDetailScreen = ({ customerId }: { customerId: string }) => {
                     <TabsContent value="customer_groups">
                         <div className="w-full">
                             <CustomerGroupCustomersTable
+                                enableHeader={false}
                                 isLoading={isCustomerGroupsLoading}
                                 customerGroups={customerGroups?.customer_groups || []}
                                 totalItems={customerGroups?.metadata?.total || 0}
@@ -218,9 +220,9 @@ const CustomerDetailScreen = ({ customerId }: { customerId: string }) => {
                         </div>
                     </TabsContent>
                     <TabsContent value="vehicles">
-                        <div>
-                            <h1>Vehicles</h1>
-                        </div>
+                        <VehiclesTable
+
+                        />
                     </TabsContent>
                 </Tabs>
             </div>

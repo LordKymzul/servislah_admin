@@ -17,6 +17,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AppointmentTable from "@/src/modules/appointments/presentation/view/components/appointment-table";
 import CustomerTable from "@/src/modules/customers/presentation/view/components/customer-table";
 import DataCard from "@/src/core/shared/presentation/components/data-card";
+import ReviewTable from "@/src/modules/reviews/presentation/view/components/review-table";
 
 const MechanicDetailScreen = ({ mechanicId }: { mechanicId: string }) => {
     const { data: mechanic, isLoading, error } = useQueryMechanicById(mechanicId);
@@ -184,6 +185,7 @@ const MechanicDetailScreen = ({ mechanicId }: { mechanicId: string }) => {
 
                     <TabsContent value="appointments">
                         <AppointmentTable
+                            enableHeader={false}
                             isLoading={isLoading}
                             appointments={mechanic?.appointments || []}
                             totalItems={mechanic?.appointments?.length || 0}
@@ -208,9 +210,18 @@ const MechanicDetailScreen = ({ mechanicId }: { mechanicId: string }) => {
                         />
                     </TabsContent>
                     <TabsContent value="reviews">
-                        <div>
-                            <h1>Reviews</h1>
-                        </div>
+                        <ReviewTable
+
+                            isLoading={isLoading}
+                            reviews={[]}
+                            totalItems={0}
+                            currentPage={1}
+                            itemsPerPage={10}
+                            onSearch={() => { }}
+                            onFilterChange={() => { }}
+                            onPageChange={() => { }}
+                            clearFilters={() => { }}
+                        />
                     </TabsContent>
 
                 </Tabs>

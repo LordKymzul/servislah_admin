@@ -79,7 +79,6 @@ const CustomerGroupCustomersTable = ({
                     enableSelection={enableSelection}
                     selectedRows={selectedRows}
                     onSelectionChange={onSelectionChange}
-                    enableHeader={enableHeader}
                     title="Customer Groups"
                     description="Manage customers in this group"
                     data={customerGroups || []}
@@ -97,8 +96,9 @@ const CustomerGroupCustomersTable = ({
                     currentPage={currentPage}
                     onPageChange={onPageChange}
                     isLoading={isLoading}
-                    headerActions={[
+                    headerActions={enableHeader ? [
                         {
+
                             label: <Button onClick={() => setIsAddCustomersCustomerGroupDialogOpen(true)}>
                                 <Plus className="w-4 h-4 mr-2" />
                                 Add
@@ -106,7 +106,9 @@ const CustomerGroupCustomersTable = ({
                             onClick: () => {
                             }
                         }
-                    ]}
+
+
+                    ] : []}
                     rowActions={[
                         {
                             label: (
