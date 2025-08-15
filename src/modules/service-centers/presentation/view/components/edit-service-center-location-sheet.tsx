@@ -37,6 +37,8 @@ import { UpdateServiceCenterDto, UpdateServiceCenterLocationDto } from "../../..
 
 interface EditServiceCenterLocationSheetProps {
     service_center?: ServiceCenterModel;
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
 }
 
 const MALAYSIA_STATES = [
@@ -79,7 +81,7 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>
 
-const EditServiceCenterLocationSheet = ({ service_center }: EditServiceCenterLocationSheetProps) => {
+const EditServiceCenterLocationSheet = ({ service_center, open, onOpenChange }: EditServiceCenterLocationSheetProps) => {
     const queryClient = useQueryClient()
     const form = useForm<FormValues>({
         resolver: zodResolver(formSchema) as any,
@@ -119,12 +121,8 @@ const EditServiceCenterLocationSheet = ({ service_center }: EditServiceCenterLoc
     }
 
     return (
-        <Sheet>
-            <SheetTrigger asChild>
-                <Button variant="ghost" className="p-2">
-                    <Menu className="w-4 h-4" />
-                </Button>
-            </SheetTrigger>
+        <Sheet open={open} onOpenChange={onOpenChange}>
+
             <SheetContent className="sm:max-w-[425px] w-full">
                 <SheetHeader>
                     <SheetTitle>Edit Service Center Location</SheetTitle>

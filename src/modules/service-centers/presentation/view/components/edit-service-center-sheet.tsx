@@ -33,6 +33,8 @@ import { UpdateServiceCenterDto } from "../../../data/entities/dto/update-servic
 
 interface EditServiceCenterSheetProps {
     service_center?: ServiceCenterModel;
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
 }
 
 const formSchema = z.object({
@@ -50,7 +52,7 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>
 
-const EditServiceCenterSheet = ({ service_center }: EditServiceCenterSheetProps) => {
+const EditServiceCenterSheet = ({ service_center, open, onOpenChange }: EditServiceCenterSheetProps) => {
     const queryClient = useQueryClient()
     const form = useForm<FormValues>({
         resolver: zodResolver(formSchema) as any,
@@ -78,12 +80,8 @@ const EditServiceCenterSheet = ({ service_center }: EditServiceCenterSheetProps)
     }
 
     return (
-        <Sheet>
-            <SheetTrigger asChild>
-                <Button variant="ghost" className="p-2">
-                    <Menu className="w-4 h-4" />
-                </Button>
-            </SheetTrigger>
+        <Sheet open={open} onOpenChange={onOpenChange}>
+
             <SheetContent className="sm:max-w-[425px] w-full">
                 <SheetHeader>
                     <SheetTitle>Edit Service Center</SheetTitle>

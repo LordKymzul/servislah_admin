@@ -21,12 +21,73 @@ import { useState } from "react"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import DataCard from "@/src/core/shared/presentation/components/data-card"
+import DefaultCard from "@/src/core/shared/presentation/components/default-card"
+import ServiceBayOverviewChart from "../components/service-bay-overview-chart"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { formatDate } from "date-fns"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Calendar } from "@/components/ui/calendar"
+import { DateRange } from "react-day-picker"
+import { addDays } from "date-fns"
+import { CalendarIcon } from "lucide-react"
 
 const ServiceBayScreen = () => {
   const router = useRouter()
   const [currentPage, setCurrentPage] = useState(1)
   const [searchTerm, setSearchTerm] = useState("")
   const itemsPerPage = 10
+  const [calendarOpen, setCalendarOpen] = React.useState(false)
+
+  const [date, setDate] = React.useState<DateRange | undefined>({
+    from: new Date(),
+    to: addDays(new Date(), 7),
+  })
+
+  // Top performing service bays
+  let TopPerformers: any[] = [
+    {
+      name: "Service Bay 1",
+      image: "https://via.placeholder.com/150",
+      value: 2500,
+      rank: 1
+    },
+    {
+      name: "Service Bay 2",
+      image: "https://via.placeholder.com/150",
+      value: 2200,
+      rank: 2
+    },
+    {
+      name: "Service Bay 3",
+      image: "https://via.placeholder.com/150",
+      value: 2000,
+      rank: 3
+    },
+    {
+      name: "Service Bay 4",
+      image: "https://via.placeholder.com/150",
+      value: 1800,
+      rank: 4
+    },
+    {
+      name: "Service Bay 5",
+      image: "https://via.placeholder.com/150",
+      value: 1600,
+      rank: 5
+    },
+    {
+      name: "Service Bay 6",
+      image: "https://via.placeholder.com/150",
+      value: 1500,
+      rank: 6
+    },
+    {
+      name: "Service Bay 7",
+      image: "https://via.placeholder.com/150",
+      value: 1400,
+      rank: 7
+    }
+  ]
 
   const {
     data: serviceCenters,
@@ -165,24 +226,57 @@ const ServiceBayScreen = () => {
               Manage service bays, equipment, and their current status
             </p>
           </div>
-          <Select
-            onValueChange={handleServiceCenterChange}
-            defaultValue={selectedServiceCenter?.id}
-          >
-            <SelectTrigger className="w-[300px]">
-              <SelectValue placeholder="Service Center" />
-            </SelectTrigger>
-            <SelectContent>
-              {serviceCenters?.map((serviceCenter) => (
-                <SelectItem
-                  key={serviceCenter.id}
-                  value={serviceCenter.id || ""}
-                >{serviceCenter.name || "N/A"}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <Select
+              onValueChange={handleServiceCenterChange}
+              defaultValue={selectedServiceCenter?.id}
+            >
+              <SelectTrigger className="w-[300px]">
+                <SelectValue placeholder="Service Center" />
+              </SelectTrigger>
+              <SelectContent>
+                {serviceCenters?.map((serviceCenter) => (
+                  <SelectItem
+                    key={serviceCenter.id}
+                    value={serviceCenter.id || ""}
+                  >{serviceCenter.name || "N/A"}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
 
+            <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  onClick={() => setCalendarOpen(true)}
+                  variant="outline" className="w-[280px] justify-start text-left font-normal">
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {date?.from ? (
+                    date.to ? (
+                      <>
+                        {formatDate(date.from, "LLL dd, y")} -{" "}
+                        {formatDate(date.to, "LLL dd, y")}
+                      </>
+                    ) : (
+                      formatDate(date.from, "LLL dd, y")
+                    )
+                  ) : (
+                    <span>Pick a date range</span>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="range"
+                  defaultMonth={date?.from}
+                  selected={date}
+                  onSelect={setDate}
+                  numberOfMonths={2}
+                  className="rounded-md border shadow"
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
           <DataCard
@@ -203,6 +297,46 @@ const ServiceBayScreen = () => {
             icon={<Users className="w-4 h-4" />}
             description="Most used service bay by number of services completed"
           />
+        </div>
+
+        <div className="mt-4 grid grid-cols-1 md:grid-cols-6 gap-4">
+          <div className="col-span-1 md:col-span-4">
+            <ServiceBayOverviewChart />
+          </div>
+          <div className="col-span-1 md:col-span-2">
+            <DefaultCard>
+              <div className="divide-y">
+                <div className="flex flex-col p-4">
+                  <h1 className="text-lg font-bold">Most Used Service Bays</h1>
+                  <p className="text-sm text-muted-foreground">
+                    Top 10 service bays by number of services completed
+                  </p>
+                </div>
+
+                <div className="flex flex-col p-4">
+                  <div className="flex flex-col space-y-4">
+                    {TopPerformers.slice(0, 7).map((performer, index) => (
+                      <div key={index} className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <Avatar>
+                            <AvatarImage src={performer.image} />
+                            <AvatarFallback>{performer.name.split(' ').map((n: string) => n[0]).join('')}</AvatarFallback>
+                          </Avatar>
+                          <div className="flex flex-col">
+                            <span className="text-sm font-medium">{performer.name}</span>
+                            <span className="text-sm text-muted-foreground">{performer.value.toLocaleString()}</span>
+                          </div>
+                        </div>
+                        <span className="text-xs px-2 py-1 rounded-full bg-blue-50 text-blue-600">
+                          {performer.rank}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </DefaultCard>
+          </div>
         </div>
 
         <div className="mt-4">
