@@ -18,6 +18,11 @@ import AppointmentTable from "@/src/modules/appointments/presentation/view/compo
 import CustomerTable from "@/src/modules/customers/presentation/view/components/customer-table";
 import DataCard from "@/src/core/shared/presentation/components/data-card";
 import ReviewTable from "@/src/modules/reviews/presentation/view/components/review-table";
+import SpecializationTable from "@/src/modules/specialization/presentation/view/components/specialization-table";
+import { useQuerySpecializations } from "@/src/modules/specialization/presentation/tanstack/specialization-tanstack";
+import { useGetCustomersByMechanicId } from "@/src/modules/customers/presentation/tanstack/customer-tanstack";
+import { useGetReviewsByMechanicId } from "@/src/modules/reviews/presentation/tanstack/review-tanstack";
+import { useQueryAppointments } from "@/src/modules/appointments/presentation/tanstack/appointment-tanstack";
 
 const MechanicDetailScreen = ({ mechanicId }: { mechanicId: string }) => {
     const { data: mechanic, isLoading, error } = useQueryMechanicById(mechanicId);
@@ -26,6 +31,52 @@ const MechanicDetailScreen = ({ mechanicId }: { mechanicId: string }) => {
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
     const [activeTab, setActiveTab] = useState("appointments")
     const router = useRouter();
+
+
+    const {
+        data: appointments,
+        isLoading: isAppointmentsLoading,
+        isError: isAppointmentsError,
+        error: appointmentsError
+    } = useQueryAppointments({
+        mechanic_id: mechanicId,
+        page: 1,
+        limit: 100
+    })
+
+    const {
+        data: customers,
+        isLoading: isCustomersLoading,
+        isError: isCustomersError,
+        error: customersError
+    } = useGetCustomersByMechanicId(mechanicId, {
+        page: 1,
+        limit: 100
+    })
+
+    const {
+        data: reviews,
+        isLoading: isReviewsLoading,
+        isError: isReviewsError,
+        error: reviewsError
+    } = useGetReviewsByMechanicId(mechanicId, {
+        page: 1,
+        limit: 100
+    })
+
+
+    const {
+        data: specializations,
+        isLoading: isSpecializationsLoading,
+        isError: isSpecializationsError,
+        error: specializationsError
+    } = useQuerySpecializations({
+        mechanic_id: mechanicId,
+        page: 1,
+        limit: 100
+    })
+
+
 
     if (isLoading) {
         return (
@@ -72,7 +123,7 @@ const MechanicDetailScreen = ({ mechanicId }: { mechanicId: string }) => {
             <div className="flex flex-col gap-4 p-6">
 
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <DataCard
                         title="Total Appointments"
                         value={mechanic?.appointments?.length.toString() || "0"}
@@ -91,104 +142,85 @@ const MechanicDetailScreen = ({ mechanicId }: { mechanicId: string }) => {
                         icon={<Users className="w-4 h-4" />}
                         description="Total number of reviews"
                     />
+                    <DataCard
+                        title="Total Specializations"
+                        value={specializations?.specializations?.length.toString() || "0"}
+                        icon={<Users className="w-4 h-4" />}
+                        description="Total number of specializations"
+                    />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="col-span-1 md:col-span-2">
-                        <DefaultCard>
-                            <div className="p-6 border-b">
-                                <div className="flex items-center justify-between">
-                                    <h2 className="md:text-lg text-base font-semibold">Summary</h2>
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button variant="ghost" size="icon">
-                                                <MoreHorizontal className="w-4 h-4" />
-                                            </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent>
-                                            <DropdownMenuItem onClick={() => setIsEditSheetOpen(true)}>
-                                                <Edit className="w-4 h-4 mr-2" />
-                                                Edit
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem onClick={() => setIsDeleteDialogOpen(true)}>
-                                                <Trash className="w-4 h-4 mr-2" />
-                                                Delete
-                                            </DropdownMenuItem>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
-                                </div>
-                            </div>
-
-                            <div className="divide-y">
-                                <div className="flex items-center justify-between p-6">
-                                    <div className="text-sm">Email</div>
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-sm font-medium">{mechanic.user?.email}</span>
-                                    </div>
-                                </div>
-
-                                <div className="flex items-center justify-between p-6">
-                                    <div className="text-sm">Status</div>
-                                    <div className="text-sm">
-                                        <Badge variant="secondary">{mechanic.is_active ? "Active" : "Inactive"}</Badge>
-                                    </div>
-                                </div>
-
-                                <div className="flex items-center justify-between p-6">
-                                    <div className="text-sm">Experience Level</div>
-                                    <div className="text-sm">
-                                        <Badge variant="secondary">{mechanic.experience_level}</Badge>
-                                    </div>
-                                </div>
-
-                                <div className="flex items-center justify-between p-6">
-                                    <div className="text-sm">Years of Experience</div>
-                                    <div className="text-sm">{mechanic.years_of_exp}</div>
-                                </div>
-                            </div>
-
-
-
-                        </DefaultCard>
+                <DefaultCard>
+                    <div className="p-6 border-b">
+                        <div className="flex items-center justify-between">
+                            <h2 className="md:text-lg text-base font-semibold">Summary</h2>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" size="icon">
+                                        <MoreHorizontal className="w-4 h-4" />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent>
+                                    <DropdownMenuItem onClick={() => setIsEditSheetOpen(true)}>
+                                        <Edit className="w-4 h-4 mr-2" />
+                                        Edit
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => setIsDeleteDialogOpen(true)}>
+                                        <Trash className="w-4 h-4 mr-2" />
+                                        Delete
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </div>
                     </div>
 
-
-                    <div className="col-span-1 md:col-span-1">
-                        <DefaultCard>
-                            <div className="p-6 border-b">
-                                <h3 className="text-lg font-medium">Specializations</h3>
+                    <div className="divide-y">
+                        <div className="flex items-center justify-between p-6">
+                            <div className="text-sm">Email</div>
+                            <div className="flex items-center gap-2">
+                                <span className="text-sm font-medium">{mechanic.user?.email}</span>
                             </div>
+                        </div>
 
-                            <div className="divide-y">
-                                {mechanic.specializations?.map((spec) => (
-                                    <div key={spec.id} className="flex items-center justify-between p-6">
-                                        <div className="text-sm">{spec.name}</div>
-                                        <div className="text-sm">
-                                            <Badge variant="secondary">{spec.description}</Badge>
-                                        </div>
-                                    </div>
-                                ))}
+                        <div className="flex items-center justify-between p-6">
+                            <div className="text-sm">Status</div>
+                            <div className="text-sm">
+                                <Badge variant="secondary">{mechanic.is_active ? "Active" : "Inactive"}</Badge>
                             </div>
-                        </DefaultCard>
+                        </div>
+
+                        <div className="flex items-center justify-between p-6">
+                            <div className="text-sm">Experience Level</div>
+                            <div className="text-sm">
+                                <Badge variant="secondary">{mechanic.experience_level}</Badge>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center justify-between p-6">
+                            <div className="text-sm">Years of Experience</div>
+                            <div className="text-sm">{mechanic.years_of_exp}</div>
+                        </div>
                     </div>
 
 
 
-                </div>
+                </DefaultCard>
+
+
                 <Tabs value={activeTab} onValueChange={setActiveTab}>
                     <TabsList>
                         <TabsTrigger value="appointments">Appointments</TabsTrigger>
                         <TabsTrigger value="customers">Customers</TabsTrigger>
-
                         <TabsTrigger value="reviews">Reviews</TabsTrigger>
+                        <TabsTrigger value="specializations">Specializations</TabsTrigger>
                     </TabsList>
 
                     <TabsContent value="appointments">
                         <AppointmentTable
                             enableHeader={false}
-                            isLoading={isLoading}
-                            appointments={mechanic?.appointments || []}
-                            totalItems={mechanic?.appointments?.length || 0}
+                            isLoading={isAppointmentsLoading}
+                            appointments={appointments?.appointments || []}
+                            totalItems={appointments?.metadata?.total || 0}
                             currentPage={1}
                             itemsPerPage={10}
                             onSearch={() => { }}
@@ -198,10 +230,9 @@ const MechanicDetailScreen = ({ mechanicId }: { mechanicId: string }) => {
                     </TabsContent>
                     <TabsContent value="customers">
                         <CustomerTable
-
-                            isLoading={isLoading}
-                            customers={[]}
-                            totalItems={0}
+                            isLoading={isCustomersLoading}
+                            customers={customers?.customers || []}
+                            totalItems={customers?.metadata?.total || 0}
                             currentPage={1}
                             itemsPerPage={10}
                             onSearch={() => { }}
@@ -211,15 +242,28 @@ const MechanicDetailScreen = ({ mechanicId }: { mechanicId: string }) => {
                     </TabsContent>
                     <TabsContent value="reviews">
                         <ReviewTable
+                            isLoading={isReviewsLoading}
+                            reviews={reviews?.reviews || []}
+                            totalItems={reviews?.metadata?.total || 0}
+                            currentPage={1}
+                            itemsPerPage={10}
+                            onSearch={() => { }}
+                            onFilterChange={() => { }}
+                            onPageChange={() => { }}
+                            clearFilters={() => { }}
+                        />
+                    </TabsContent>
 
-                            isLoading={isLoading}
-                            reviews={[]}
+                    <TabsContent value="specializations">
+                        <SpecializationTable
+                            specializations={specializations}
                             totalItems={0}
                             currentPage={1}
                             itemsPerPage={10}
                             onSearch={() => { }}
                             onFilterChange={() => { }}
                             onPageChange={() => { }}
+                            isLoading={false}
                             clearFilters={() => { }}
                         />
                     </TabsContent>

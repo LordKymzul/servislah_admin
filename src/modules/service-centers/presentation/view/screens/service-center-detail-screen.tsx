@@ -60,6 +60,21 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { DateRange } from "react-day-picker"
 import { Calendar as CalendarShadcn } from "@/components/ui/calendar"
 import { Tabs, TabsTrigger, TabsList, TabsContent } from "@/components/ui/tabs"
+import DefaultTable from "@/src/core/shared/presentation/components/default-table"
+import AppointmentTable from "@/src/modules/appointments/presentation/view/components/appointment-table"
+import ServicesDataTable from "@/src/modules/services/presentation/view/components/services-data-table"
+import ServiceTable from "@/src/modules/services/presentation/view/components/service-table"
+import { useQueryServices } from "@/src/modules/services/presentation/tanstack/service-tanstack"
+import ServiceBayTable from "@/src/modules/service-bays/presentation/view/components/service-bay-table"
+import { useQueryServiceBays } from "@/src/modules/service-bays/presentation/tanstack/service-bay-tanstack"
+import SpecializationTable from "@/src/modules/specialization/presentation/view/components/specialization-table"
+import { useQuerySpecializations } from "@/src/modules/specialization/presentation/tanstack/specialization-tanstack"
+import { useQueryMe } from "@/src/modules/users/presentation/tanstack/user-tanstack"
+import { useQueryMechanics } from "@/src/modules/mechanics/presentation/tanstack/mechanic-tanstack"
+import MechanicsTable from "@/src/modules/mechanics/presentation/view/components/mechanics-table"
+import CustomerTable from "@/src/modules/customers/presentation/view/components/customer-table"
+import ReviewTable from "@/src/modules/reviews/presentation/view/components/review-table"
+import { useGetReviews } from "@/src/modules/reviews/presentation/tanstack/review-tanstack"
 
 const ServiceCenterDetailScreen = ({ service_center_id }: { service_center_id: string }) => {
     const [searchQuery, setSearchQuery] = useState("");
@@ -79,6 +94,63 @@ const ServiceCenterDetailScreen = ({ service_center_id }: { service_center_id: s
         isError: isServiceCenterError,
         error: serviceCenterError
     } = useQueryServiceCenterById({ service_center_id });
+
+
+    const {
+        data: services,
+        isLoading: isServicesLoading,
+        isError: isServicesError,
+        error: servicesError
+    } = useQueryServices({
+        service_center_id: service_center_id,
+        page: 1,
+        limit: 100
+    })
+
+    const {
+        data: serviceBays,
+        isLoading: isServiceBaysLoading,
+        isError: isServiceBaysError,
+        error: serviceBaysError
+    } = useQueryServiceBays({
+        service_center_id: service_center_id,
+        page: 1,
+        limit: 100
+    })
+
+    const {
+        data: specializations,
+        isLoading: isSpecializationsLoading,
+        isError: isSpecializationsError,
+        error: specializationsError
+    } = useQuerySpecializations({
+        service_center_id: service_center_id,
+        page: 1,
+        limit: 100
+    })
+
+    const {
+        data: mechanics,
+        isLoading: isMechanicsLoading,
+        isError: isMechanicsError,
+        error: mechanicsError
+    } = useQueryMechanics({
+        service_center_id: service_center_id,
+        page: 1,
+        limit: 100
+    })
+
+    const {
+        data: reviews,
+        isLoading: isReviewsLoading,
+        isError: isReviewsError,
+        error: reviewsError
+    } = useGetReviews({
+        service_center_id: service_center_id,
+        page: 1,
+        limit: 100
+    })
+
 
     const formatCurrency = (amount: number) => {
         return new Intl.NumberFormat('en-MY', {
@@ -216,11 +288,12 @@ const ServiceCenterDetailScreen = ({ service_center_id }: { service_center_id: s
                 </div>
 
 
-                <Tabs value={activeTab} onValueChange={setActiveTab}>
+                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                     <TabsList>
                         <TabsTrigger value="overview">Overview</TabsTrigger>
                         <TabsTrigger value="appointments">Appointments</TabsTrigger>
                         <TabsTrigger value="services">Services</TabsTrigger>
+                        <TabsTrigger value="services_bay">Service Bays</TabsTrigger>
                         <TabsTrigger value="specializations">Specializations</TabsTrigger>
                         <TabsTrigger value="mechanics">Mechanics</TabsTrigger>
                         <TabsTrigger value="customers">Customers</TabsTrigger>
@@ -381,50 +454,114 @@ const ServiceCenterDetailScreen = ({ service_center_id }: { service_center_id: s
                     </TabsContent>
 
                     <TabsContent value="appointments">
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 w-full">
-                            <div className="w-full lg:col-span-2">
-                                <ServiceCenterDetailSalesChart />
-                            </div>
+                        <div className="w-full mt-4">
+                            <AppointmentTable
+                                enableHeader={true}
+                                appointments={[]}
+                                totalItems={0}
+                                currentPage={1}
+                                itemsPerPage={10}
+                                onSearch={() => { }}
+                                onFilterChange={() => { }}
+                                isLoading={false}
+                                onPageChange={() => { }}
+                            />
                         </div>
                     </TabsContent>
 
                     <TabsContent value="services">
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 w-full">
-                            <div className="w-full lg:col-span-2">
-                                <ServiceCenterDetailSalesChart />
-                            </div>
+                        <div className="w-full mt-4">
+                            <ServiceTable
+                                services={services}
+                                totalItems={0}
+                                currentPage={1}
+                                itemsPerPage={10}
+                                onSearch={() => { }}
+                                onFilterChange={() => { }}
+                                onPageChange={() => { }}
+                                isLoading={false}
+                                enableHeader={true}
+                                clearFilters={() => { }}
+                            />
+                        </div>
+                    </TabsContent>
+
+                    <TabsContent value="services_bay">
+                        <div className="w-full mt-4">
+                            <ServiceBayTable
+                                serviceBays={serviceBays}
+                                totalItems={0}
+                                currentPage={1}
+                                itemsPerPage={10}
+                                onSearch={() => { }}
+                                onFilterChange={() => { }}
+                                onPageChange={() => { }}
+                                isLoading={false}
+                                enableHeader={true}
+                                clearFilters={() => { }}
+                            />
                         </div>
                     </TabsContent>
 
                     <TabsContent value="specializations">
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 w-full">
-                            <div className="w-full lg:col-span-2">
-                                <ServiceCenterDetailSalesChart />
-                            </div>
+                        <div className="w-full mt-4">
+                            <SpecializationTable
+                                specializations={specializations}
+                                totalItems={0}
+                                currentPage={1}
+                                itemsPerPage={10}
+                                onSearch={() => { }}
+                                onFilterChange={() => { }}
+                                onPageChange={() => { }}
+                                isLoading={false}
+                                clearFilters={() => { }}
+                            />
                         </div>
                     </TabsContent>
 
                     <TabsContent value="mechanics">
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 w-full">
-                            <div className="w-full lg:col-span-2">
-                                <ServiceCenterDetailSalesChart />
-                            </div>
+                        <div className="w-full mt-4">
+                            <MechanicsTable
+                                mechanics={mechanics}
+                                currentPage={1}
+                                itemsPerPage={10}
+                                onSearch={() => { }}
+                                onFilterChange={() => { }}
+                                onPageChange={() => { }}
+                                isLoading={false}
+                                clearFilters={() => { }}
+                            />
                         </div>
                     </TabsContent>
 
                     <TabsContent value="customers">
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 w-full">
-                            <div className="w-full lg:col-span-2">
-                                <ServiceCenterDetailSalesChart />
-                            </div>
+                        <div className="w-full mt-4">
+                            <CustomerTable
+                                customers={[]}
+                                currentPage={1}
+                                itemsPerPage={10}
+                                onSearch={() => { }}
+                                onFilterChange={() => { }}
+                                onPageChange={() => { }}
+                                isLoading={false}
+                                totalItems={0}
+                            />
                         </div>
                     </TabsContent>
 
                     <TabsContent value="reviews">
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 w-full">
-                            <div className="w-full lg:col-span-2">
-                                <ServiceCenterDetailSalesChart />
-                            </div>
+                        <div className="w-full mt-4">
+                            <ReviewTable
+                                reviews={reviews?.reviews || []}
+                                currentPage={1}
+                                itemsPerPage={10}
+                                onSearch={() => { }}
+                                onFilterChange={() => { }}
+                                onPageChange={() => { }}
+                                isLoading={false}
+                                totalItems={reviews?.metadata?.total || 0}
+                                clearFilters={() => { }}
+                            />
                         </div>
                     </TabsContent>
                 </Tabs>

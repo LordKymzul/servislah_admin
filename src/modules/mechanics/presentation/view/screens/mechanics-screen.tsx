@@ -1,6 +1,7 @@
-"use client"
+'use client'
 
 import * as React from "react"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { CalendarIcon, Users, Wrench } from "lucide-react"
 import MechanicsTable from "../components/mechanics-table"
@@ -10,6 +11,7 @@ import LoadingScreen from "@/src/core/shared/presentation/screens/loading-screen
 import { useQueryMechanics } from "../../tanstack/mechanic-tanstack"
 import DataCard from "@/src/core/shared/presentation/components/data-card"
 import { Calendar } from "@/components/ui/calendar"
+import { QueryMechanicDto } from "../../../data/entities/dto/query-mechanic.dto"
 
 import {
     Popover,
@@ -66,21 +68,68 @@ const TopPerformers = [
         image: "/avatars/michael.jpg",
         status: "Active"
     },
-
-
 ]
 
 const MechanicsScreen = () => {
-
+    const [currentPage, setCurrentPage] = useState(1)
+    const [searchTerm, setSearchTerm] = useState("")
     const [date, setDate] = React.useState<DateRange | undefined>({
         from: new Date(),
         to: addDays(new Date(), 7),
     })
-    const { isLoading, isError, error } = useQueryMechanics({
-        page: 1,
+    const [calendarOpen, setCalendarOpen] = React.useState(false)
+
+    const [queryParams, setQueryParams] = useState<QueryMechanicDto>({
+        page: currentPage,
         limit: 10
     })
-    const [calendarOpen, setCalendarOpen] = React.useState(false)
+
+    const {
+        data: mechanics,
+        isLoading,
+        isError,
+        error
+    } = useQueryMechanics(queryParams)
+
+    const handleSearch = (term: string) => {
+        setSearchTerm(term)
+        setQueryParams(prev => ({
+            ...prev,
+            search: term
+        }))
+    }
+
+    const handleFilterChange = (filters: Record<string, string>) => {
+        const newQueryParams: QueryMechanicDto = {
+            ...queryParams,
+            page: currentPage,
+            limit: 10
+        }
+
+        Object.entries(filters).forEach(([key, value]) => {
+            switch (key) {
+                case 'is_active':
+                    newQueryParams.is_active = value === 'true'
+                    break
+                case 'years_of_exp':
+                    newQueryParams.years_of_exp = parseInt(value)
+                    break
+                case 'experience_level':
+                    newQueryParams.experience_level = value
+                    break
+            }
+        })
+
+        setQueryParams(newQueryParams)
+    }
+
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page)
+        setQueryParams(prev => ({
+            ...prev,
+            page
+        }))
+    }
 
     if (isLoading) {
         return <LoadingScreen />
@@ -96,9 +145,7 @@ const MechanicsScreen = () => {
 
     return (
         <div className="mx-auto py-4 px-4 w-full">
-
             <div className="flex flex-col md:flex-row md:items-center items-start justify-between w-full gap-4">
-
                 <div>
                     <h1 className="text-2xl font-bold">Mechanics</h1>
                     <p className="text-sm text-muted-foreground">
@@ -110,7 +157,8 @@ const MechanicsScreen = () => {
                     <PopoverTrigger asChild>
                         <Button
                             onClick={() => setCalendarOpen(true)}
-                            variant="outline" className="w-[280px] justify-start text-left font-normal">
+                            variant="outline"
+                            className="w-[280px] justify-start text-left font-normal">
                             <CalendarIcon className="mr-2 h-4 w-4" />
                             {date?.from ? (
                                 date.to ? (
@@ -128,7 +176,6 @@ const MechanicsScreen = () => {
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0" align="start">
                         <Calendar
-
                             mode="range"
                             defaultMonth={date?.from}
                             selected={date}
@@ -143,19 +190,19 @@ const MechanicsScreen = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                 <DataCard
                     title="Total Mechanics"
-                    value={"100"}
+                    value={mechanics?.metadata?.total?.toString() || "0"}
                     icon={<Users className="w-4 h-4" />}
                     description="Total number of mechanics"
                 />
                 <DataCard
                     title="Active Mechanics"
-                    value={"10"}
+                    value={(mechanics?.mechanics?.filter(m => m.is_active)?.length || 0).toString()}
                     icon={<Users className="w-4 h-4" />}
                     description="Total number of mechanics that are active"
                 />
                 <DataCard
                     title="Top Mechanics"
-                    value={"Hakim"}
+                    value={mechanics?.mechanics?.[0]?.user?.name || "N/A"}
                     icon={<Users className="w-4 h-4" />}
                     description="Top 1 mechanics by rating"
                 />
@@ -196,18 +243,27 @@ const MechanicsScreen = () => {
                                     ))}
                                 </div>
                             </div>
-
                         </div>
-
-
-
                     </DefaultCard>
                 </div>
             </div>
 
-
             <div className="mt-4">
-                <MechanicsTable />
+                <MechanicsTable
+                    mechanics={mechanics}
+                    currentPage={currentPage}
+                    itemsPerPage={10}
+                    isLoading={isLoading}
+                    onSearch={handleSearch}
+                    onFilterChange={handleFilterChange}
+                    onPageChange={handlePageChange}
+                    clearFilters={() => {
+                        setQueryParams({
+                            page: 1,
+                            limit: 10
+                        })
+                    }}
+                />
             </div>
         </div>
     )

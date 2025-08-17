@@ -30,6 +30,7 @@ import { Calendar } from "@/components/ui/calendar"
 import { DateRange } from "react-day-picker"
 import { addDays } from "date-fns"
 import { CalendarIcon } from "lucide-react"
+import { QueryServiceBayDto } from "../../../data/entities/dto/query-service-bay.dto"
 
 const ServiceBayScreen = () => {
   const router = useRouter()
@@ -96,8 +97,15 @@ const ServiceBayScreen = () => {
     error: serviceCentersError
   } = useQueryServiceCenters({})
 
-  const selectedServiceCenter = serviceCenters?.[0]
-  const [selectedServiceCenterID, setSelectedServiceCenterID] = useState<string | null>(selectedServiceCenter?.id || null)
+  const [selectedServiceCenterID, setSelectedServiceCenterID] = useState<string | null>(null)
+
+  // Update selected service center ID when data is loaded
+  React.useEffect(() => {
+    if (serviceCenters?.service_centers.length && !selectedServiceCenterID) {
+      const firstServiceCenter = serviceCenters.service_centers[0]
+      setSelectedServiceCenterID(firstServiceCenter.id || null)
+    }
+  }, [serviceCenters, selectedServiceCenterID])
 
   const handleServiceCenterChange = (serviceCenterId: string) => {
     toast.success(`Selected service center: ${serviceCenterId}`)
@@ -110,7 +118,7 @@ const ServiceBayScreen = () => {
     isError,
     error
   } = useQueryServiceBays({
-    service_center_id: selectedServiceCenterID || selectedServiceCenter?.id
+    service_center_id: selectedServiceCenterID || undefined
   })
 
   const columns = [
@@ -193,25 +201,58 @@ const ServiceBayScreen = () => {
     }
   ]
 
+  const [queryParams, setQueryParams] = useState<QueryServiceBayDto>({
+    page: currentPage,
+    limit: itemsPerPage,
+    service_center_id: selectedServiceCenterID || undefined
+  })
+
+  // Update query params when selected service center changes
+  React.useEffect(() => {
+    if (selectedServiceCenterID) {
+      setQueryParams(prev => ({
+        ...prev,
+        service_center_id: selectedServiceCenterID
+      }))
+    }
+  }, [selectedServiceCenterID])
+
   const handleSearch = (term: string) => {
     setSearchTerm(term)
-    // Add search functionality when API supports it
+    setQueryParams((prev: QueryServiceBayDto) => ({
+      ...prev,
+      name: term
+    }))
   }
 
   const handleFilterChange = (filters: Record<string, string>) => {
-    // Add filter functionality when API supports it
+    const newQueryParams: QueryServiceBayDto = {
+      ...queryParams,
+      page: currentPage,
+      limit: itemsPerPage
+    }
+
+    Object.entries(filters).forEach(([key, value]) => {
+      if (key === 'status') {
+        newQueryParams.status = value
+      }
+      if (key === 'specialization') {
+        newQueryParams.specialization = value
+      }
+    })
+
+    setQueryParams(newQueryParams)
   }
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page)
-    // Add pagination functionality when API supports it
+    setQueryParams((prev: QueryServiceBayDto) => ({
+      ...prev,
+      page
+    }))
   }
 
-  if (isLoading) {
-    return <LoadingScreen />
-  }
-
-  if (isError || !serviceBaysData) {
+  if (isError) {
     return <InfoScreen type={InfoScreenType.ERROR} title="Error" description={error?.message || "Failed to load service bays"} />
   }
 
@@ -229,13 +270,13 @@ const ServiceBayScreen = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <Select
               onValueChange={handleServiceCenterChange}
-              defaultValue={selectedServiceCenter?.id}
+              defaultValue={selectedServiceCenterID || undefined}
             >
               <SelectTrigger className="w-[300px]">
                 <SelectValue placeholder="Service Center" />
               </SelectTrigger>
               <SelectContent>
-                {serviceCenters?.map((serviceCenter) => (
+                {serviceCenters?.service_centers.map((serviceCenter) => (
                   <SelectItem
                     key={serviceCenter.id}
                     value={serviceCenter.id || ""}
@@ -377,6 +418,7 @@ const ServiceBayScreen = () => {
             itemsPerPage={itemsPerPage}
             currentPage={currentPage}
             onPageChange={handlePageChange}
+            isLoading={isLoading}
             rowActions={[
               {
                 label: (

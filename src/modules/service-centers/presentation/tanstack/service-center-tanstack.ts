@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ServiceCenterModel } from "../../data/entities/model/service-center-model";
+import { ServiceCenterModel, ServiceCenterResponseModel } from "../../data/entities/model/service-center-model";
 import { getServiceCenterById, getServiceCenters, updateServiceCenter } from "../../data/services/service-center-api.service";
 import { useAuthTanstack } from "@/src/modules/auth/presentation/tanstack/auth-tanstack";
 import { QueryServiceCenterDto } from "../../data/entities/dto/query-service-center.dto";
@@ -11,7 +11,7 @@ export const useQueryServiceCenters = (query: QueryServiceCenterDto) => {
     const token = user?.backend_tokens.access_token;
 
 
-    return useQuery<ServiceCenterModel[]>({
+    return useQuery<ServiceCenterResponseModel>({
         queryKey: ["service-centers"],
         queryFn: () => {
             if (!token) {

@@ -37,6 +37,26 @@ export const getReviewById = async (token: string, id: string): Promise<ReviewMo
     }
 }
 
+export const getReviewsByMechanicId = async (token: string, mechanicId: string, query: QueryReviewDto): Promise<ReviewsResponseModel> => {
+    try {
+        const response = await axiosInstance({ token: token }).get(`/reviews/mechanic/${mechanicId}`, {
+            params: query
+        })
+        let reviews: ReviewModel[] = response.data.data.reviews
+        let metadata: MetadataModel = response.data.data.metadata
+        return {
+            reviews: reviews,
+            metadata: metadata
+        }
+    }
+    catch (error) {
+        if (error instanceof AxiosError) {
+            throw new Error(error.response?.data.message)
+        }
+        throw new Error("Failed to get reviews by mechanic id")
+    }
+}
+
 export const updateReview = async (token: string, id: string, data: UpdateReviewDto): Promise<ReviewModel> => {
     try {
         const response = await axiosInstance({ token: token }).patch(`/reviews/${id}`, data)

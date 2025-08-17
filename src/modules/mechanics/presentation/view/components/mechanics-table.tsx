@@ -1,42 +1,49 @@
 'use client'
 
-import { useState } from "react"
 import DefaultTable from "@/src/core/shared/presentation/components/default-table"
-import { useDeleteMechanic, useQueryMechanics } from "../../tanstack/mechanic-tanstack"
-import { QueryMechanicDto } from "../../../data/entities/dto/query-mechanic.dto"
+import { MechanicModel, MechanicResponseModel } from "@/src/modules/mechanics/data/entities/model/mechanic-model"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { Edit, Eye, FileDown, Plus, Trash } from "lucide-react"
 import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
+import { useState } from "react"
+import { useDeleteMechanic } from "../../tanstack/mechanic-tanstack"
 import CreateMechanicDialog from "./create-mechanic-dialog"
 import DefaultAlertDialog from "@/src/core/shared/presentation/components/default-alert-dialog"
 
-const MechanicsTable = () => {
-    const [currentPage, setCurrentPage] = useState(1)
-    const [searchTerm, setSearchTerm] = useState("")
-    const [selectedMechanic, setSelectedMechanic] = useState<any>(null)
-    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
-    const itemsPerPage = 10
+interface MechanicsTableProps {
+    mechanics: MechanicResponseModel | undefined
+    currentPage: number
+    itemsPerPage: number
+    isLoading: boolean
+    onSearch: (term: string) => void
+    onFilterChange: (filters: Record<string, string>) => void
+    onPageChange: (page: number) => void
+    clearFilters: () => void
+}
 
-    const [queryParams, setQueryParams] = useState<QueryMechanicDto>({
-        page: currentPage,
-        limit: itemsPerPage
-    })
-
-    const { data: mechanicsData, isLoading } = useQueryMechanics(queryParams)
-    const { mutate: deleteMechanic, isPending } = useDeleteMechanic()
+const MechanicsTable = ({
+    mechanics,
+    currentPage,
+    itemsPerPage,
+    isLoading,
+    onSearch,
+    onFilterChange,
+    onPageChange,
+    clearFilters,
+}: MechanicsTableProps) => {
     const router = useRouter()
-
-    const [open, setOpen] = useState(false)
+    const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+    const [selectedMechanic, setSelectedMechanic] = useState<MechanicModel | null>(null)
+    const { mutate: deleteMechanic, isPending } = useDeleteMechanic()
 
     const columns = [
         {
             header: "Name",
             accessorKey: "name",
-            cell: (row: any) => (
-
+            cell: (row: MechanicModel) => (
                 <div>
-
                     <div className="font-medium">{row.user?.name || "N/A"}</div>
                     <div className="text-sm text-muted-foreground">{row.user?.email || "N/A"}</div>
                 </div>
@@ -45,27 +52,33 @@ const MechanicsTable = () => {
         {
             header: "Experience Level",
             accessorKey: "experience_level",
-            cell: (row: any) => (
-
+            cell: (row: MechanicModel) => (
                 <Badge variant={
                     row.experience_level === "EXPERT" ? "default" :
                         row.experience_level === "INTERMEDIATE" ? "secondary" : "outline"
                 }>
-                    {row.experience_level.charAt(0) + row.experience_level.slice(1).toLowerCase()}
+                    {row.experience_level ? row.experience_level.charAt(0) + row.experience_level.slice(1).toLowerCase() : 'N/A'}
                 </Badge>
             ),
         },
         {
             header: "Years of Experience",
             accessorKey: "years_of_exp",
-            cell: (row: any) => (
+            cell: (row: MechanicModel) => (
                 <span>{row.years_of_exp} {row.years_of_exp === 1 ? 'year' : 'years'}</span>
+            ),
+        },
+        {
+            header: "Service Center",
+            accessorKey: "service_center.name",
+            cell: (row: MechanicModel) => (
+                <div className="text-sm">{row.service_center?.name || 'N/A'}</div>
             ),
         },
         {
             header: "Status",
             accessorKey: "is_active",
-            cell: (row: any) => (
+            cell: (row: MechanicModel) => (
                 <Badge variant={row.is_active ? "default" : "destructive"}>
                     {row.is_active ? "Active" : "Inactive"}
                 </Badge>
@@ -104,67 +117,20 @@ const MechanicsTable = () => {
         }
     ]
 
-    const handleSearch = (term: string) => {
-        setSearchTerm(term)
-        setQueryParams(prev => ({
-            ...prev,
-            search: term
-        }))
-    }
-
-    const handleFilterChange = (filters: Record<string, string>) => {
-        const newQueryParams: QueryMechanicDto = {
-            page: currentPage,
-            limit: itemsPerPage
-        }
-
-        // Convert string values to appropriate types based on QueryMechanicDto
-        Object.entries(filters).forEach(([key, value]) => {
-            switch (key) {
-                case 'is_active':
-                    newQueryParams.is_active = value === 'true'
-                    break
-                case 'years_of_exp':
-                    newQueryParams.years_of_exp = parseInt(value)
-                    break
-                case 'experience_level':
-                    newQueryParams.experience_level = value
-                    break
-            }
-        })
-
-        setQueryParams(newQueryParams)
-    }
-
-    const handlePageChange = (page: number) => {
-        setCurrentPage(page)
-        setQueryParams(prev => ({
-            ...prev,
-            page
-        }))
-    }
-
-    const handleViewMechanic = (mechanicId: string) => {
-        router.push(`/mechanics/${mechanicId}`)
-    }
-
-    const handleDeleteMechanic = (mechanic: any) => {
+    const handleDeleteMechanic = (mechanic: MechanicModel) => {
         setSelectedMechanic(mechanic)
         setIsDeleteDialogOpen(true)
     }
 
     const handleConfirmDelete = () => {
-        if (selectedMechanic) {
+        if (selectedMechanic?.id) {
             deleteMechanic(selectedMechanic.id, {
                 onSettled: () => {
-
                     setIsDeleteDialogOpen(false)
                     setSelectedMechanic(null)
                 }
             })
         }
-
-
     }
 
     return (
@@ -172,47 +138,45 @@ const MechanicsTable = () => {
             <DefaultTable
                 title="Mechanics"
                 description="Manage your mechanics and their assignments"
-                data={mechanicsData?.mechanics || []}
+                data={mechanics?.mechanics || []}
                 headerActions={[
                     {
                         label: <Button
-                            onClick={() => setOpen(true)}
-                            variant="outline" size="sm">
+                            onClick={() => console.log("Export")}
+                            variant="outline"
+                            size="sm">
                             <FileDown className="w-4 h-4 mr-1" />
                             Export
                         </Button>,
-                        onClick: () => {
-                            console.log("Add New")
-                        }
+                        onClick: () => console.log("Export clicked")
                     },
                     {
                         label: <Button
-                            onClick={() => setOpen(true)}
-                            variant="outline" size="sm">
+                            onClick={() => setIsCreateDialogOpen(true)}
+                            variant="outline"
+                            size="sm">
                             <Plus className="w-4 h-4 mr-1" />
                             Add New
                         </Button>,
-                        onClick: () => {
-                            console.log("Add New")
-                        }
+                        onClick: () => setIsCreateDialogOpen(true)
                     }
                 ]}
-                isLoading={isLoading}
                 columns={columns}
                 filters={filters}
                 enableFiltering={true}
                 enableSearch={true}
                 enableSorting={true}
                 searchPlaceholder="Search mechanics..."
-                onSearch={handleSearch}
-                onFilterChange={handleFilterChange}
+                onSearch={onSearch}
+                onFilterChange={onFilterChange}
                 enablePagination={true}
-                totalItems={mechanicsData?.metadata?.total || 0}
+                totalItems={mechanics?.metadata?.total || 0}
                 itemsPerPage={itemsPerPage}
                 currentPage={currentPage}
-                onPageChange={handlePageChange}
+                onPageChange={onPageChange}
+                isLoading={isLoading}
+                clearFilters={clearFilters}
                 rowActions={[
-
                     {
                         label: (
                             <div className="flex items-center gap-2">
@@ -221,7 +185,7 @@ const MechanicsTable = () => {
                             </div>
                         ),
                         onClick: (row) => {
-                            handleViewMechanic(row.id)
+                            router.push(`/mechanics/${row.id}`)
                         }
                     },
                     {
@@ -237,7 +201,11 @@ const MechanicsTable = () => {
                     }
                 ]}
             />
-            <CreateMechanicDialog open={open} onOpenChange={setOpen} />
+
+            <CreateMechanicDialog
+                open={isCreateDialogOpen}
+                onOpenChange={setIsCreateDialogOpen}
+            />
 
             <DefaultAlertDialog
                 open={isDeleteDialogOpen}

@@ -11,3 +11,7 @@ export enum ExperienceLevel {
     INTERMEDIATE = "INTERMEDIATE",
     EXPERT = "EXPERT"
 }
+
+
+export const DEFAULT_PAGE = 1;
+export const DEFAULT_LIMIT = 10;

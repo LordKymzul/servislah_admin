@@ -34,3 +34,24 @@ export const getCustomerById = async (token: string, id: string): Promise<Custom
         throw new Error("Failed to get customer")
     }
 }
+
+export const getCustomersByMechanicId = async (token: string, mechanicId: string, query: QueryCustomerDto): Promise<CustomersResponseModel> => {
+    try {
+        const response = await axiosInstance({ token: token }).get(`/customers/mechanic/${mechanicId}`, {
+            params: query
+        })
+        let customers: CustomersModel[] = response.data.data.customers
+        let metadata: MetadataModel = response.data.data.metadata
+        return {
+            customers: customers,
+            metadata: metadata
+        }
+    }
+    catch (error) {
+        if (error instanceof AxiosError) {
+            throw new Error(error.response?.data.message)
+        }
+        throw new Error("Failed to get customers by mechanic id")
+    }
+
+}

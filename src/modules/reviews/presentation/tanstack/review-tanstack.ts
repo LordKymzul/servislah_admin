@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { deleteReview, getReviewById, getReviews, updateReview } from "@/src/modules/reviews/data/services/review-api.service"
+import { deleteReview, getReviewById, getReviews, getReviewsByMechanicId, updateReview } from "@/src/modules/reviews/data/services/review-api.service"
 import { useAuthTanstack } from "@/src/modules/auth/presentation/tanstack/auth-tanstack"
 import { QueryReviewDto } from "../../data/entities/dto/query-review.dto"
 import { UpdateReviewDto } from "../../data/entities/dto/update-review.dto"
@@ -36,6 +36,23 @@ export const useGetReviewById = (id: string) => {
         },
     });
 }
+
+export const useGetReviewsByMechanicId = (mechanicId: string, query: QueryReviewDto) => {
+    const { user } = useAuthTanstack();
+    const token = user?.backend_tokens.access_token;
+    return useQuery({
+        queryKey: ['reviews', mechanicId, query],
+        queryFn: async () => {
+            if (!token) {
+                throw new Error("You are not authenticated");
+            }
+            const reviews = await getReviewsByMechanicId(token, mechanicId, query);
+            return reviews;
+        },
+        enabled: !!token && !!mechanicId,
+    });
+}
+
 
 
 export const useUpdateReview = (id: string) => {

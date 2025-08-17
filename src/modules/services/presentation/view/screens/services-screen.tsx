@@ -29,6 +29,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar"
 import { DateRange } from "react-day-picker"
 import { addDays } from "date-fns"
+import ServiceTable from "../components/service-table"
+import { QueryServiceDto } from "../../../data/entities/dto/query-service.dto"
 
 
 //top performing services
@@ -103,7 +105,6 @@ const ServicesScreen = () => {
     const [calendarOpen, setCalendarOpen] = React.useState(false)
 
 
-
     const [date, setDate] = React.useState<DateRange | undefined>({
         from: new Date(),
         to: addDays(new Date(), 7),
@@ -116,13 +117,41 @@ const ServicesScreen = () => {
         error: serviceCentersError
     } = useQueryServiceCenters({})
 
-    const selectedServiceCenter = serviceCenters?.[0]
-    const [selectedServiceCenterID, setSelectedServiceCenterID] = useState<string | null>(selectedServiceCenter?.id || null)
+
+    const [selectedServiceCenterID, setSelectedServiceCenterID] = useState<string | null>(null)
+
+    // Update selected service center ID when data is loaded
+    React.useEffect(() => {
+        if (serviceCenters?.service_centers.length && !selectedServiceCenterID) {
+            const firstServiceCenter = serviceCenters.service_centers[0]
+            setSelectedServiceCenterID(firstServiceCenter.id || null)
+        }
+    }, [serviceCenters, selectedServiceCenterID])
 
     const handleServiceCenterChange = (serviceCenterId: string) => {
         toast.success(`Selected service center: ${serviceCenterId}`)
         setSelectedServiceCenterID(serviceCenterId)
     }
+
+
+
+    const [queryParams, setQueryParams] = useState<QueryServiceDto>({
+        page: currentPage,
+        limit: itemsPerPage,
+        service_center_id: selectedServiceCenterID || undefined
+    })
+
+    // Update query params when selected service center changes
+    React.useEffect(() => {
+        if (selectedServiceCenterID) {
+            setQueryParams(prev => ({
+                ...prev,
+                service_center_id: selectedServiceCenterID
+            }))
+        }
+    }, [selectedServiceCenterID])
+
+
 
     const {
         data: servicesData,
@@ -130,67 +159,56 @@ const ServicesScreen = () => {
         isError,
         error
     } = useQueryServices({
-        service_center_id: selectedServiceCenterID || selectedServiceCenter?.id
+        ...queryParams,
     })
 
-    const columns = [
-        {
-            header: "Name",
-            accessorKey: "name",
-        },
-        {
-            header: "Description",
-            accessorKey: "description",
-        },
-        {
-            header: "Price",
-            accessorKey: "price",
-        },
-        {
-            header: "Duration",
-            accessorKey: "duration",
-        },
-        {
-            header: "Available",
-            accessorKey: "is_active",
-            cell: (row: any) => (
-                <Badge variant={row.is_active ? "default" : "outline"}>
-                    {row.is_active ? "Available" : "Not Available"}
-                </Badge>
-            ),
-        },
-    ]
-
-    const filters = [
-        {
-            label: "Status",
-            value: "is_active",
-            options: [
-                { label: "Available", value: "true" },
-                { label: "Not Available", value: "false" }
-            ]
-        }
-    ]
 
     const handleSearch = (term: string) => {
         setSearchTerm(term)
-        // Add search functionality when API supports it
+        setQueryParams(prev => ({
+            ...prev,
+            search: term
+        }))
     }
 
     const handleFilterChange = (filters: Record<string, string>) => {
-        // Add filter functionality when API supports it
+        const newQueryParams: QueryServiceDto = {
+            ...queryParams,
+            page: currentPage,
+            limit: itemsPerPage
+        }
+
+        Object.entries(filters).forEach(([key, value]) => {
+            if (key === 'is_active') {
+                newQueryParams.is_active = value === 'true'
+            }
+            if (key === 'duration') {
+                const [min, max] = value.split('-').map(Number)
+                newQueryParams.min_duration = min
+                newQueryParams.max_duration = max
+            }
+            if (key === 'price') {
+                const [min, max] = value.split('-').map(Number)
+                newQueryParams.min_price = min
+                newQueryParams.max_price = max
+            }
+        })
+
+        setQueryParams(newQueryParams)
     }
+
 
     const handlePageChange = (page: number) => {
         setCurrentPage(page)
-        // Add pagination functionality when API supports it
+        setQueryParams(prev => ({
+            ...prev,
+            page
+        }))
     }
 
-    if (isLoading) {
-        return <LoadingScreen />
-    }
 
-    if (isError || !servicesData) {
+
+    if (isError) {
         return <InfoScreen type={InfoScreenType.ERROR} title="Error" description={error?.message || "Failed to load services"} />
     }
 
@@ -208,13 +226,13 @@ const ServicesScreen = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                     <Select
                         onValueChange={handleServiceCenterChange}
-                        defaultValue={selectedServiceCenter?.id}
+                        defaultValue={selectedServiceCenterID || undefined}
                     >
                         <SelectTrigger className="w-[300px]">
                             <SelectValue placeholder="Service Center" />
                         </SelectTrigger>
                         <SelectContent>
-                            {serviceCenters?.map((serviceCenter) => (
+                            {serviceCenters?.service_centers.map((serviceCenter) => (
                                 <SelectItem
                                     key={serviceCenter.id}
                                     value={serviceCenter.id || ""}
@@ -325,67 +343,24 @@ const ServicesScreen = () => {
             </div>
 
             <div className="mt-4">
-                <DefaultTable
-                    title="Services"
-                    description="Manage your service offerings and pricing"
-                    data={servicesData?.services || []}
-                    headerActions={[
-                        {
-                            label: <Button variant="outline" size="sm">
-                                <FileDown className="w-4 h-4 mr-1" />
-                                Export
-                            </Button>,
-                            onClick: () => {
-                                console.log("Export")
-                            }
-                        },
-                        {
-                            label: <Button variant="outline" size="sm">
-                                <Plus className="w-4 h-4 mr-1" />
-                                Add New
-                            </Button>,
-                            onClick: () => {
-                                console.log("Add New Service")
-                            }
-                        }
-                    ]}
-                    columns={columns}
-                    filters={filters}
-                    enableFiltering={true}
-                    enableSearch={true}
-                    enableSorting={true}
-                    searchPlaceholder="Search services..."
+
+                <ServiceTable
+                    services={servicesData}
+                    totalItems={servicesData?.metadata?.total || 0}
+                    currentPage={currentPage}
+                    itemsPerPage={itemsPerPage}
                     onSearch={handleSearch}
                     onFilterChange={handleFilterChange}
-                    enablePagination={true}
-                    totalItems={servicesData?.metadata?.total || 0}
-                    itemsPerPage={itemsPerPage}
-                    currentPage={currentPage}
                     onPageChange={handlePageChange}
-                    rowActions={[
-                        {
-                            label: (
-                                <div className="flex items-center gap-2">
-                                    <Edit className="h-4 w-4" />
-                                    <span>Edit</span>
-                                </div>
-                            ),
-                            onClick: (row) => {
-                                console.log("Edit:", row)
-                            }
-                        },
-                        {
-                            label: (
-                                <div className="flex items-center gap-2">
-                                    <Eye className="h-4 w-4" />
-                                    <span>View Details</span>
-                                </div>
-                            ),
-                            onClick: (row) => {
-                                router.push(`/settings/service-center/services/${row.id}`)
-                            }
-                        }
-                    ]}
+                    isLoading={isLoading}
+                    enableHeader={true}
+                    clearFilters={() => {
+                        setQueryParams({
+                            service_center_id: selectedServiceCenterID || undefined,
+                            page: 1,
+                            limit: itemsPerPage
+                        })
+                    }}
                 />
             </div>
 

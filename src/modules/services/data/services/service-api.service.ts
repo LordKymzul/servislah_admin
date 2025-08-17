@@ -6,6 +6,7 @@ import { UpdateServiceDto } from "../entities/dto/update-service.dto";
 
 
 export const getServices = async (token: string, query: QueryServiceDto): Promise<ResponseGetAllServicesModel> => {
+    console.log('Query Services', query);
 
     try {
 

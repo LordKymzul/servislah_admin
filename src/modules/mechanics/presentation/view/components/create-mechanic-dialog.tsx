@@ -42,7 +42,7 @@ const CreateMechanicDialog = ({ open, onOpenChange }: CreateMechanicDialogProps)
 
     })
 
-    const selectedServiceCenter = serviceCenters?.[0]
+    const selectedServiceCenter = serviceCenters?.service_centers?.[0]
     const [selectedServiceCenterID, setSelectedServiceCenterID] = useState<string | null>(selectedServiceCenter?.id || null)
     const [selectedUserID, setSelectedUserID] = useState<string>("")
     const [experienceLevel, setExperienceLevel] = useState<string>("")
@@ -104,7 +104,7 @@ const CreateMechanicDialog = ({ open, onOpenChange }: CreateMechanicDialogProps)
                                 <SelectValue placeholder="Select service center" />
                             </SelectTrigger>
                             <SelectContent>
-                                {serviceCenters?.map((center) => (
+                                {serviceCenters?.service_centers?.map((center) => (
                                     <SelectItem key={center.id} value={center.id || ""}>
                                         {center.name}
                                     </SelectItem>

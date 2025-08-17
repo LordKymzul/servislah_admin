@@ -1,3 +1,4 @@
+import { MetadataModel } from "@/src/core/shared/entities/model/metadata-model";
 import { MechanicModel } from "@/src/modules/mechanics/data/entities/model/mechanic-model";
 import { OperatingHoursModel } from "@/src/modules/operating-hours/data/entities/model/operating-hours-model";
 
@@ -61,3 +62,9 @@ export interface SpecializationModel {
     service_center?: ServiceCenterModel;
 }
 
+
+
+export interface ServiceCenterResponseModel {
+    service_centers: ServiceCenterModel[];
+    metadata: MetadataModel;
+}

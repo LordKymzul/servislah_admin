@@ -119,7 +119,7 @@ const ServiceCenterScreen = () => {
             <DefaultTable
                 title="Service Centers"
                 description="Manage your service center's details"
-                data={serviceCenters || []}
+                data={serviceCenters?.service_centers || []}
                 columns={columns}
                 filters={filters}
                 enableFiltering={true}
@@ -130,7 +130,7 @@ const ServiceCenterScreen = () => {
                 onFilterChange={handleFilterChange}
                 onSort={handleSort}
                 enablePagination={true}
-                totalItems={serviceCenters?.length || 0}
+                totalItems={serviceCenters?.metadata?.total || 0}
                 itemsPerPage={itemsPerPage}
                 currentPage={currentPage}
                 onPageChange={handlePageChange}
